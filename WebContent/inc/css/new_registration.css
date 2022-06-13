@@ -1,0 +1,397 @@
+@charset "utf-8";
+
+#container h1 {
+display: inline-block;
+height: 40px;
+line-height: 40px;
+text-align: left;
+font-size: 30px;
+}
+#container input[type="text"],
+#container input[type="date"] {
+	height: 45px;		
+}
+#container input[type="text"] {
+	width: 80%;
+}
+input#search_name {
+    margin-right: 20px;
+}
+select#search_chmod {
+    margin-right: 20px;
+}
+.team_contain{
+	max-width:1300px;
+	margin:0 auto;
+}
+.team_sch{
+	margin-left:35px;
+	margin-right:10px;
+}
+input#searchName.board_text{
+	width:30%;
+	text-align:left;
+}
+.board_sch{
+	text-align:left;
+}
+.board_enroll{
+	/*float:right;*/
+}
+input#board_title.board_write_tit{
+	width:60%;
+}
+
+.top {
+width: 100%;
+height: auto;
+overflow: hidden;
+}
+.top_left {
+ float: left;
+margin-top: 20px;
+width: 20%;
+}
+.card {
+width: 100px; 
+height: 30px;
+line-height: 30px;
+text-align: center;
+border: 1px solid #000;
+margin-top: 10px;
+}
+.top_right {
+float: right;
+text-align: left;
+position: relative;
+}
+.status {
+text-align: center;
+margin-top: 35px;
+float: left;
+font-size: 0;
+}
+.status>p {
+width: 130px;
+position: absolute;
+left: 5%; 
+top: 0px;
+text-align: center;
+height: 30px;
+line-height: 30px;
+border: 1px solid #039;
+}
+.status_wrap {
+	text-align: center;
+	font-size: 0;
+}
+.status_wrap li {
+	display: inline-block;
+	font-size: 15px;
+	vertical-align: top;
+}
+.status_wrap li div {
+	width: 110px;
+	height: 30px;
+	line-height: 30px;
+	border: 1px solid #161616;
+	background-color: #fff;
+	color: #161616;	
+}
+.status_wrap li .state_fit {
+	background-color: #161616;
+	color: #fff;
+}
+.manager_box {
+width: 210px;
+height: 30px;
+line-height: 30px;
+position: absolute;
+top: 0;
+right: 0%;
+}
+.bt {
+width: 50px; 
+height: 30px;
+line-height: 30px;
+border: 2px solid #161616;
+float: right;
+cursor: pointer;
+background-color: #161616;
+color: #fff;
+-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+-ms-border-radius: 10px;
+-o-border-radius: 10px;
+border-radius: 10px;
+}
+#manager {
+width: 150px;
+height: 30px;
+line-height: 30px;
+border: 2px solid #161616;
+float: left;
+cursor: pointer;
+background-color: #fff;
+-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+-ms-border-radius: 10px;
+-o-border-radius: 10px;
+border-radius: 10px;
+}
+#line { 
+position: absolute;
+left: 60px;
+top: 64px;
+width: 700px; 
+height: 1px; 
+background-color: #039;
+display: none;
+}
+.line {
+position: absolute;
+left: 58%;
+top: 50%;
+width: 90px;
+height: 1px; 
+background-color: #039;
+}
+/*-------------------------------- 고객사정보 ---------------------------*/
+.Information_wrap {
+margin-top: 10px;
+
+}
+.Information {
+
+text-align: center;
+}
+.Information tr:first-child,
+.qna tr:first-child {
+/* background-color: #161616; */
+}
+.Information tr:first-child th {
+	background: none;
+	color: #000;
+}
+.qna tr th,
+.Information tr th {
+	border: 1px solid #CBCBCB;
+	text-align: left;
+}
+.Information tr th,
+.qna tr th {
+background-color: #000;
+color: #fff;
+font-weight: 500;
+padding-left: 45px;
+}
+.Information tr td,
+.qna tr td {
+border: 1px solid #CBCBCB;
+}
+.Information .attach {
+	outline: none;
+	border: none;
+	background-color: transparent;
+}
+.Information .btn_file {
+	cursor: pointer;
+}
+/*-------------------------------- 문의사항 ----------------------------*/
+.qna_wrap {
+width: 79%;
+overflow: hidden;
+/* margin-top: 10px; */
+}
+.qna_wrap td {
+	text-align: center;
+}
+.check_wrap input[type="checkbox"],
+.check_wrap input[type="radio"] {
+cursor: pointer;
+width: 15px;
+height: 15px;
+appearance: auto;
+}
+.check_wrap {
+	text-align: center;
+}
+.check_wrap1>td {
+	width: 6.692%;
+}
+/*-------------------------------- 진행상황 ----------------------------*/
+.progress_wrap {
+margin-top: 10px;
+width: 100%;
+overflow: hidden;
+}
+.progress_wrap h3 {
+font-size: 13px;
+overflow: hidden;
+width: 10%;
+height: auto;
+line-height: 405px;
+text-align: center;
+display: inline;
+float: left;
+border: 1px solid #000;
+background-color: #161616;
+color: #fff;
+}
+.progress1 {
+width: 90%;
+float: left;
+text-align: center;
+}
+.progress1 tr:first-child th:not(:first-child) {
+width: 230px;
+height: 20px;
+line-height: 20px;
+}
+.progress1 tr:first-child th:first-child {
+width: 150px;
+}
+.progress1 tr:not(:first-child) td {
+height: 25px;
+;height: 25px;
+}
+.progress1 tr:first-child th:first-child {
+border-left: none;
+}
+.progress1 tr td {
+border: 1px solid #000;
+}
+.progress1 .btn_price {
+	cursor: pointer;
+}
+.progress2_bt {
+width: 250px;
+height: 30px;
+float: right;
+}
+.progress2_bt1,.progress2_bt2 {
+float: left;
+width: 50%;
+height: 100%;
+line-height: 30px;
+text-align: center;
+cursor: pointer;
+background-color: #000;
+color: #fff;
+}
+.progress2 {
+width: 90%;
+float: right;
+}
+.progress2 td {
+padding-left: 10px;
+}
+.progress2 tr:nth-child(1) td,.progress2 tr:nth-child(2) td,.progress2 tr:nth-child(3) td {
+overflow: auto;
+padding: 10px;
+}
+.progress2 tr th {
+width: 150px;
+border: 1px solid #000;	
+background-color: #505050;
+color: #fff;
+}
+.progress2 tr td {
+border: 1px solid #000;
+}
+
+.footer_bt {
+padding-top: 30px;	
+width: 300px;
+margin: auto;
+text-align: center;
+font-size: 0;
+}
+.footer_bt div {
+width: 100px;
+height: 25px;
+line-height: 25px;
+display: inline-block;
+background-color: #000;
+color: #fff;
+cursor: pointer;
+}
+.progress2 input[type="radio"] {
+cursor: pointer;
+width: 15px;
+height: 20px;
+appearance: auto;
+}
+.progress2 input[type="date"] {
+width: 200px;
+}
+.writing_bt {
+	outline: none;
+	border: none;
+}
+.price {
+	text-align: center;
+	color: #161616;
+	border: none;
+}
+#file_area div label:before,
+#jicul_detail div label:before {
+	display: none;
+}
+#file_area div label,
+#jicul_detail div label {
+	width: 80px;
+	height: 44px;
+	line-height: 44px;
+	background-color: #000;
+	color: #fff;
+	display: inline-block;
+	margin-right: 10px;
+	text-align: center;
+	
+}
+#file_area div input[type="button"],
+#jicul_detail div input[type="button"] {
+	border: none;
+	background-color: #505050;
+	color: #fff;
+}
+.recruit_wrap{
+	display:flex;
+	width:100%;
+	padding-bottom:80px;
+}
+.recruit th{
+	width:8%;
+}
+.Information_wrap{
+	margin-left:20px;
+	width:33%;
+}
+.side_info_box th{
+	width:27%;
+}
+.recruit_wrap textarea{
+	height:400px;
+}
+.check_wrap.recruit{
+	height:45px;
+}
+#container tr.recruit input[type="text"]{
+	width:100%;
+}
+.re_title{
+	width:100%;
+	border-bottom:1px solid #000;
+	display:flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.re_title span.volun{
+	font-size:25px;
+	font-weight:bold;
+	padding-left:9px;
+}
+.re_name{
+	font-size:17px;
+}

@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/leaveMapper">
+	<select id="getLeaveList" parameterType="hashmap" resultType="hashmap">
+		select 
+			*
+		from annual_leave_master where 1
+			<if test="!search_name.equals('')">
+				AND title like '%${search_name}%'
+			</if>	
+	</select>
+	
+	<select id="chkLeave" parameterType="hashmap" resultType="hashmap">
+		select 
+			*
+		from annual_leave_master where
+			target_year ='${target_year}'
+			<if test="!idx.equals('')">
+				and idx !='${idx}'
+			</if>
+	</select>
+	
+	<insert id="addLeave" parameterType="hashmap">		
+		<selectKey keyProperty="idx" order="BEFORE" resultType="int">
+			SELECT IFNULL(MAX(idx)+1,1) AS idx FROM annual_leave_master
+		</selectKey>
+        insert into annual_leave_master
+ 		(
+ 		 idx, 			title,		submit_date,
+ 		 target_year
+ 		)
+            VALUES
+		(
+		 '${idx}', 		'${title}',	now()+0,
+		 '${target_year}'		
+		)
+	</insert>
+	
+	<insert id="addLeaveUser">
+		INSERT INTO annual_leave_user (leave_idx,user_idx,leave_cnt,submit_date)
+		SELECT '${idx}',idx,'0' ,cast(NOW()+0 AS CHAR) FROM user where use_yn='Y' 
+		/* and chmod !='1' */
+	</insert>
+	
+	<select id="getLeaveUserList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			CONCAT('${target_year}','연차') AS title,
+			'${target_year}' AS target_year,
+			idx AS user_idx,
+			NAME,
+			(SELECT team_kr FROM team WHERE idx = tt1.team) AS team_nm,
+			(SELECT name FROM chmod WHERE idx = tt1.chmod) AS chmod_nm,
+			(SELECT name FROM level WHERE idx = tt1.level) AS level_nm,
+			
+			tt1.team,
+			tt1.chmod,
+			tt1.level,
+			
+			IFNULL(tt1.user_leave,0) AS user_leave,
+			
+			case 
+				when tt1.over_leave IS NULL then '0'
+				when left(SUBSTRING_INDEX(tt1.over_leave,'.',-1),2) BETWEEN 0 AND 24 then CONCAT(SUBSTRING_INDEX(  tt1.over_leave,'.',1),'.0')
+				when left(SUBSTRING_INDEX(tt1.over_leave,'.',-1),2) BETWEEN 25 AND 49 then CONCAT(SUBSTRING_INDEX(  tt1.over_leave,'.',1),'.25')
+				when left(SUBSTRING_INDEX(tt1.over_leave,'.',-1),2) BETWEEN 50 AND 74 then CONCAT(SUBSTRING_INDEX(  tt1.over_leave,'.',1),'.5')
+				when left(SUBSTRING_INDEX(tt1.over_leave,'.',-1),2) BETWEEN 75 AND 99 then CONCAT(SUBSTRING_INDEX(  tt1.over_leave,'.',1),'.75')
+				ELSE tt1.over_leave
+				END AS over_leave,
+			IFNULL(tt1.over_leave,0) as ori_over_leave,
+			
+			
+			ifnull(tt1.prize_leave,0) AS prize_leave,
+			ifnull(tt1.use_leave,0) AS use_leave, 
+			ifnull(tt1.use_cancel_leave,0) AS use_cancel_leave,
+			ifnull(tt1.early_leave,0) AS early_leave,
+			ifnull(tt1.early_cancel_leave,0) AS early_cancel_leave,
+			ifnull(tt1.half_leave,0) AS half_leave,
+			ifnull(tt1.half_cancel_leave,0) AS half_cancel_leave
+		FROM (
+			SELECT 
+			/* 부여 연차  */
+			(	SELECT
+					b.leave_cnt
+				FROM annual_leave_master a,annual_leave_user b WHERE
+					a.target_year='${target_year}'
+					AND a.idx = b.leave_idx
+					AND b.user_idx=t1.idx
+			) AS user_leave, 
+					
+			 /* 야근 연차  */
+			 
+			 /* 야근 연차  */
+			 
+			/*2022년도 용 야근 연차 로직*/
+			<if test="target_year != '2021'.toString()">
+				getOverNightCnt(t1.idx,'${target_year}') as over_leave, 
+			</if>
+			
+			<if test="target_year eq '2021'.toString()">
+			/*2021년 까지 사용할 야근 연차 로직*/
+			left((SELECT
+				sum(TIME_TO_SEC(over_night_work_time)) / 28800 AS cnt1
+			FROM user_guntae_day WHERE
+				user_idx=t1.idx
+				AND LEFT(submit_year,4) <![CDATA[>=]]> '2020'
+				AND submit_year <![CDATA[<]]> '2021-07-01' 
+				AND DAYOFWEEK(submit_year) != '1' 
+				and DAYOFWEEK(submit_year) != '7') + 
+			(SELECT
+				(sum(TIME_TO_SEC(over_night_work_time))/2) / 28800 AS cnt2
+			FROM user_guntae_day WHERE
+				user_idx=t1.idx
+				AND submit_year <![CDATA[>=]]> '2021-07-01' 
+				AND DAYOFWEEK(submit_year) != '1' 
+				and DAYOFWEEK(submit_year) != '7'),5) AS over_leave,
+			</if>
+			 /* 포상 연차   */
+			(	select
+					SUM(prize_value)
+				FROM approval_line a, doc_prize b where
+					a.doc_type = b.doc_type
+					AND a.doc_idx = b.idx
+					AND a.step ='결재'
+					AND b.target_year='${target_year}'
+					AND b.target=t1.idx ) AS prize_leave,
+			
+			 /* 사용 연차  */
+			guntae_cnt('${target_year}',t1.idx,'연차')  AS use_leave,
+			
+			 /* 취소 연차 */
+			guntae_cnt('${target_year}',t1.idx,'연차취소') AS use_cancel_leave,
+			
+			/*  조퇴 연차 */
+			(
+				SELECT
+					COUNT(*) * 0.25 AS cnt
+			
+				FROM approval_line a, doc_guntae b WHERE
+					a.doc_idx = b.idx
+					AND a.user_idx=t1.idx
+					AND b.user_idx=a.user_idx
+					AND a.doc_type = b.doc_type
+					AND b.leave_type='조퇴'
+					AND a.step ='결재'
+					AND left(b.start_ymd,'4') ='${target_year}'
+			) early_leave,
+			
+			/* 조퇴 취소 연차 */
+			(
+				SELECT
+					COUNT(*) * 0.25 AS cnt
+				FROM approval_line a, doc_guntae b WHERE
+					a.doc_idx = b.idx
+					AND a.user_idx=t1.idx
+					AND b.user_idx=a.user_idx
+					AND a.doc_type = b.doc_type
+					AND b.leave_type='조퇴취소'
+					AND a.step ='결재'
+					AND left(b.start_ymd,'4') ='${target_year}'
+			) early_cancel_leave,
+			/* 반차 사용 */
+			(
+				SELECT
+					COUNT(*)*0.5 AS cnt
+				FROM approval_line a, doc_guntae b WHERE
+					a.doc_idx = b.idx
+					AND a.user_idx=t1.idx
+					AND b.user_idx=a.user_idx
+					AND a.doc_type = b.doc_type
+					AND (b.leave_type='오전반차' OR b.leave_type='오후반차')
+					AND a.step ='결재'
+					AND left(b.start_ymd,'4') ='${target_year}'
+			) AS half_leave,
+			
+			/* 반차 취소 */
+			(
+				SELECT
+					COUNT(*)*0.5 AS cnt
+				FROM approval_line a, doc_guntae b WHERE
+					a.doc_idx = b.idx
+					AND a.user_idx=t1.idx
+					AND b.user_idx=a.user_idx
+					AND a.doc_type = b.doc_type
+					AND b.leave_type='반차취소'
+					AND a.step ='결재'
+					AND left(b.start_ymd,'4') ='${target_year}'
+			) AS half_cancel_leave,
+			t1.*
+			 FROM 
+			(SELECT
+					*
+				FROM user WHERE 1=1
+			
+					<if test="!search_use_yn.equals('')">
+						<if test="search_use_yn != 'Y'.toString()">
+							and use_yn='Y'
+						</if>
+					</if>
+			
+					<if test="!search_name.equals('')">
+						and name like  '%${search_name}%'
+					</if>
+					
+					<if test="!search_team.equals('')">
+						and team = '${search_team}'
+					</if>
+					
+					<if test="!search_chmod.equals('')">
+						and chmod = '${search_chmod}'
+					</if>
+					
+					<if test="!search_level.equals('')">
+						and level = '${search_level}'
+					</if>
+					) t1
+		) tt1
+		order by tt1.chmod,NAME
+	</select>
+	
+	<update id="uptLeave" parameterType="hashmap">		
+        update annual_leave_master set
+ 			title = '${title}',
+ 			update_date =now()+0,
+ 			target_year ='${target_year}'
+		where 
+			idx = '${idx}'
+	</update>
+	
+	<delete id="delLeave">
+		delete from annual_leave_master where idx='${idx}'
+	</delete>
+	
+	<delete id="delLeaveUser">
+		delete from annual_leave_user where leave_idx='${idx}'
+	</delete>
+	
+	<update id="getWeenkEnd" parameterType="hashmap">		
+        update annual_leave_user set
+ 			leave_cnt = '${leave_cnt}',
+ 			update_date =now()+0
+		where 
+			leave_idx = '${idx}'
+			and user_idx ='${user_idx}'
+	</update>
+	
+	<select id="chkHoliday" parameterType="hashmap" resultType="hashmap">
+		select
+			count(*) as cnt
+		from annual_holiday where
+			day ='${locdate}'
+	</select>
+	
+	<select id="chkHoliday_one" parameterType="hashmap" resultType="hashmap">
+		select
+			count(*) as cnt
+		from annual_holiday where
+			day ='${target_day}'
+	</select>
+	
+	
+	<insert id="addHoliday" parameterType="hashmap">		
+        insert into annual_holiday
+        (day,info)
+        values
+        ('${locdate}','${dateName}')
+	</insert>
+	
+	<insert id="addHoliday_one" parameterType="hashmap">		
+        insert into annual_holiday
+        (day,info)
+        values
+        ('${target_day}','${holiday_info}')
+	</insert>
+	
+	
+	<select id="getTargetYear" parameterType="hashmap" resultType="hashmap">
+		select
+			target_year
+		from annual_leave_master where
+			idx ='${idx}'
+	</select>
+	
+	<select id="getLeaveUserDetailCount" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			count(*) as CNT
+		FROM approval_line aa, doc_guntae bb WHERE
+			aa.doc_idx = bb.idx
+			AND aa.doc_type = bb.doc_type
+			AND aa.user_idx = bb.user_idx
+			AND aa.user_idx = '${user_idx}'
+			and aa.step='결재'
+			and (bb.leave_type='연차' or
+				 bb.leave_type='연차취소' or
+				 bb.leave_type='오전반차' or
+				 bb.leave_type='오후반차' or
+				 bb.leave_type='반차취소' or
+				 bb.leave_type='조퇴' )
+			
+			<if test="!end_ymd.equals('')">
+				and bb.end_ymd <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and bb.start_ymd <![CDATA[>=]]> '${start_ymd}'
+			</if>
+			
+	</select>	
+
+	<select id="getLeaveUserDetailList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			aa.idx AS line_idx,
+			bb.idx AS doc_idx,
+			bb.doc_type,
+			bb.user_idx,
+			bb.leave_type,
+			(SELECT NAME FROM user WHERE idx = bb.shifter) AS shifter_nm,
+			date_format(bb.submit_date,'%Y-%m-%d') AS submit_date,
+			bb.start_ymd,
+			bb.end_ymd,
+			bb.cont,
+			case
+			when leave_type='조퇴' then '0.25'
+			when leave_type='오전반차' OR leave_type='오후반차' then '0.5'
+			when leave_type='반차취소' then '-0.5'
+			when leave_type='연차취소' then (getDayCnt(bb.start_ymd,bb.end_ymd)) * -1
+			ELSE getDayCnt(bb.start_ymd,bb.end_ymd) end AS day_cnt
+		FROM approval_line aa, doc_guntae bb WHERE
+			aa.doc_idx = bb.idx
+			AND aa.doc_type = bb.doc_type
+			AND aa.user_idx = bb.user_idx
+			AND aa.user_idx = '${user_idx}'
+			and aa.step='결재'
+			and (bb.leave_type='연차' or
+				 bb.leave_type='연차취소' or
+				 bb.leave_type='오전반차' or
+				 bb.leave_type='오후반차' or
+				 bb.leave_type='반차취소' or
+				 bb.leave_type='조퇴' )
+			
+			<if test="!end_ymd.equals('')">
+				and bb.end_ymd <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and bb.start_ymd <![CDATA[>=]]> '${start_ymd}'
+			</if>
+					
+			<if test="!order_by.equals('') and !sort_type.equals('')">
+				order by ${sort_type} ${order_by}
+			</if>
+			limit ${s_rownum}, ${e_rownum}
+	</select>
+	
+	<select id="getHolidayListCount" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			count(*) as CNT
+		FROM annual_holiday WHERE 1=1
+			<if test="!search_name.equals('')">
+				and info like  '%${search_name}%'
+			</if>
+			
+			<if test="!end_ymd.equals('')">
+				and day <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and day <![CDATA[>=]]> '${start_ymd}'
+			</if>
+			
+	</select>	
+
+	<select id="getHolidayList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			*
+		FROM annual_holiday WHERE 1=1
+			<if test="!search_name.equals('')">
+				and info like  '%${search_name}%'
+			</if>
+			
+			<if test="!end_ymd.equals('')">
+				and day <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and day <![CDATA[>=]]> '${start_ymd}'
+			</if>
+					
+			<if test="!order_by.equals('') and !sort_type.equals('')">
+				order by ${sort_type} ${order_by}
+			</if>
+			
+			limit ${s_rownum}, ${e_rownum}
+	</select>
+	
+	<update id="saveUserLeave" parameterType="hashmap">		
+        update annual_leave_user set
+ 			leave_cnt = '${leave_cnt}',
+ 			update_date =now()+0
+		where 
+			leave_idx = '${idx}'
+			and user_idx ='${user_idx}'
+	</update>
+	
+</mapper>

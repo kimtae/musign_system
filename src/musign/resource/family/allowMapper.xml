@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/allowMapper">
+	 <select id="getCardList" resultType="hashmap">
+		SELECT * FROM pay_method where pre_pay_yn='Y'
+	</select>
+	
+	<insert id="insLine" parameterType="hashmap">		
+        insert into approval_line
+ 		(
+ 		 user_idx,			doc_idx, 			ref_line, 			
+ 		 step,				approval_wait, 		approval_line, 		
+ 		 approval_chk,		approval_date,		doc_type,
+ 		 approval_content,	imsi_yn,			submit_date
+ 		)
+            VALUES
+		(
+		 '${myidx}',		'${doc_idx}',		'${ref_line}',			
+		 '제출',				'${waiter}',		'${approval_line}',		
+		 '${chk_line}',		'${date_chk}',		'${doc_type}',
+		 '${content}',		'${imsi_yn}',		now()+0
+		)
+	</insert>
+	
+	<update id="uptLine" parameterType="hashmap">		
+        update approval_line set
+        
+        	<if test="imsi_yn eq 'Y'.toString() ">
+        		imsi_yn ='Y',
+        	</if>
+        	
+        	<if test="imsi_yn != 'Y'.toString() ">
+        		imsi_yn ='N',
+        	</if>
+        
+ 			ref_line = '${ref_line}',
+ 			approval_wait = '${waiter}',
+ 			approval_line = '${approval_line}',
+ 			approval_chk = '${chk_line}',
+ 			approval_date = '${date_chk}',
+ 			approval_content = '${content}',
+ 			submit_date =now()+0
+		where 
+			idx = '${idx}'
+	</update>
+	
+	<insert id="insJicul" parameterType="hashmap">
+		<selectKey keyProperty="idx" order="BEFORE" resultType="int">
+			SELECT IFNULL(MAX(idx)+1,1) AS idx FROM doc_jicul
+		</selectKey>
+		
+        insert into doc_jicul
+ 		(
+ 		 idx,
+ 		 user_idx, 				attach_idx, 	title,
+ 		 cont, 					purpose, 		company,
+ 		 pay_date,				pay_method,		use_method,
+ 		 detail_cont,			detail_amt,		detail_receipt,
+ 		 detail_receipt_ori,	total_amt,		
+ 		 submit_date,			doc_type		
+ 		)
+        VALUES
+		(
+		 '${idx}', 					
+		 '${myidx}',				'${attach_idx}', 		'${title}',
+		 '${content}', 				'${purpose}', 			'${company}', 
+		 '${pay_date}',				'${pay_method}', 		'${use_method}',
+		 '${detail_cont_list}',		'${detail_pay_list}',	'${filename_arr}',
+		 '${filename_ori_arr}',		'${total_amt}',			
+		 now()+0,					'${doc_type}'
+		 )
+	</insert>
+	
+	<update id="uptJicul" parameterType="hashmap">
+		UPDATE  doc_jicul set
+ 		
+ 		 attach_idx='${attach_idx}', 			title='${title}',
+ 		 cont = '${content}', 					purpose = '${purpose}', 		
+ 		 company='${company}',					pay_date='${pay_date}',				
+ 		 pay_method = '${pay_method}',			use_method = '${use_method}',
+ 		 detail_cont = '${detail_cont_list}',	detail_amt = '${detail_pay_list}',		
+ 		 detail_receipt = '${filename_arr}',	detail_receipt_ori = '${filename_ori_arr}',	
+ 		 total_amt = '${total_amt}',			submit_date = now()+0	
+		where 
+			idx ='${idx}'
+		 
+	</update>
+	
+	<insert id="insJumal" parameterType="hashmap">
+		<selectKey keyProperty="idx" order="BEFORE" resultType="int">
+			SELECT IFNULL(MAX(idx)+1,1) AS idx FROM doc_jumal
+		</selectKey>
+		
+        insert into doc_jumal
+ 		(
+ 		 idx,
+ 		 user_idx, 				attach_idx, 	work_day,
+ 		 work_hour, 			cont, 			
+ 		 submit_date,			doc_type
+ 		)
+            VALUES
+		(
+		 '${idx}', 					
+		 '${myidx}',				'${attach_idx}', 		'${jumal_work_day}',
+		 '${jumal_hour}', 			'${jumal_cont}', 		
+		 now()+0,					'${doc_type}'
+		)
+	</insert>
+	
+	<update id="uptJumal" parameterType="hashmap">
+		UPDATE  doc_jumal set
+		 attach_idx = '${attach_idx}',
+ 		 work_day='${jumal_work_day}', 			work_hour='${jumal_hour}',
+ 		 cont = '${jumal_cont}', 				submit_date = now()+0
+		where 
+			idx ='${idx}'
+		 
+	</update>
+	
+	
+	<insert id="insGuntae" parameterType="hashmap">
+		<selectKey keyProperty="idx" order="BEFORE" resultType="int">
+			SELECT IFNULL(MAX(idx)+1,1) AS idx FROM doc_guntae
+		</selectKey>
+		
+        insert into doc_guntae
+ 		(
+ 		 idx,
+ 		 user_idx, 				attach_idx, 	leave_type,
+ 		 shifter, 				start_ymd, 		end_ymd,
+ 		 total_hour,			cont,			detail_receipt,
+ 		 detail_receipt_ori,	submit_date,	leave_cnt,
+ 		 doc_type
+ 		)
+            VALUES
+		(
+		 '${idx}', 					
+		 '${myidx}',				'${attach_idx}', 		'${guntae_leave_type}',
+		 '${shifter}', 				'${guntae_start_ymd}', 	'${guntae_end_ymd}', 
+		 '${total_hour}',			'${guntae_cont}', 		'${filename_arr}',
+		 '${filename_ori_arr}',		now()+0,				'${sum_leave_cnt}',
+		 '${doc_type}'
+		)
+	</insert>
+	
+	<update id="uptGuntae" parameterType="hashmap">
+		UPDATE  doc_guntae set
+ 		 attach_idx='${attach_idx}', 					leave_type='${guntae_leave_type}',
+ 		 shifter = '${shifter}', 						start_ymd = '${guntae_start_ymd}', 		
+ 		 end_ymd='${guntae_end_ymd}',					total_hour='${total_hour}',				
+ 		 cont = '${guntae_cont}',						detail_receipt = '${filename_arr}',
+ 		 detail_receipt_ori = '${filename_ori_arr}',	submit_date = now()+0,
+ 		 leave_cnt ='${sum_leave_cnt}'
+		where 
+			idx ='${idx}'
+		 
+	</update>
+	
+	<insert id="insYeonjang" parameterType="hashmap">
+		<selectKey keyProperty="idx" order="BEFORE" resultType="int">
+			SELECT IFNULL(MAX(idx)+1,1) AS idx FROM doc_yeonjang
+		</selectKey>
+		
+        insert into doc_yeonjang
+ 		(
+ 		 idx,
+ 		 user_idx, 				attach_idx, 	work_day,
+ 		 work_hour, 			cont, 			
+ 		 submit_date,			doc_type
+ 		)
+            VALUES
+		(
+		 '${idx}', 					
+		 '${myidx}',				'${attach_idx}', 		'${yeonjang_work_day}',
+		 '${yeonjang_hour}', 		'${yeonjang_cont}', 	 
+		 now()+0,					'${doc_type}'
+		)
+	</insert>
+	
+	<update id="uptYeonjang" parameterType="hashmap">
+		UPDATE  doc_yeonjang set
+		 attach_idx = '${attach_idx}',
+ 		 work_day='${yeonjang_work_day}', 			work_hour='${yeonjang_hour}',
+ 		 cont = '${yeonjang_cont}', 				submit_date = now()+0
+		where 
+			idx ='${idx}'
+		 
+	</update>
+	
+	<insert id="insRoundRobin" parameterType="hashmap">
+		<selectKey keyProperty="idx" order="BEFORE" resultType="int">
+			SELECT IFNULL(MAX(idx)+1,1) AS idx FROM doc_roundrobin
+		</selectKey>
+		
+        insert into doc_roundrobin
+ 		(
+ 		 idx,
+ 		 user_idx, 				attach_idx, 		title,
+ 		 purpose, 				company, 			start_ymd,
+ 		 end_ymd,				cont,				detail_cont,			
+ 		 detail_amt,			detail_receipt,		detail_receipt_ori,	
+ 		 total_amt,				submit_date,		doc_type
+ 		)
+        	VALUES
+		(
+		 '${idx}', 					
+		 '${myidx}',				'${attach_idx}', 		'${rr_title}',
+		 '${rr_purpose}', 			'${rr_company}', 		'${start_ymd}', 
+		 '${end_ymd}',				'${rr_cont}', 			'${detail_cont_list}',		
+		 '${detail_pay_list}',		'${filename_arr}', 		'${filename_ori_arr}',		
+		 '${total_amt}',			now()+0,				 '${doc_type}'
+		)
+	</insert>
+	
+	<update id="uptRoundRobin" parameterType="hashmap">
+		UPDATE  doc_roundrobin set
+ 		 attach_idx='${attach_idx}', 					title='${rr_title}',
+ 		 purpose = '${rr_purpose}', 					company = '${rr_company}', 		
+ 		 start_ymd='${start_ymd}',						end_ymd='${end_ymd}',				
+ 		 cont = '${rr_cont}',							detail_cont = '${detail_cont_list}',
+ 		 detail_amt = '${detail_pay_list}',				detail_receipt = '${filename_arr}',	
+ 		 detail_receipt_ori = '${filename_ori_arr}'	, 	total_amt ='${total_amt}',
+ 		 submit_date = now()+0
+		where 
+			idx ='${idx}'
+		 
+	</update>
+	
+	<insert id="insPrize" parameterType="hashmap">
+		<selectKey keyProperty="idx" order="BEFORE" resultType="int">
+			SELECT IFNULL(MAX(idx)+1,1) AS idx FROM doc_prize
+		</selectKey>
+		
+        insert into doc_prize
+ 		(
+ 		 idx,
+ 		 user_idx, 				attach_idx, 	target,
+ 		 cont,		 			prize_value,	
+ 		 submit_date,			doc_type,		target_year
+ 		)
+            VALUES
+		(
+		 '${idx}', 					
+		 '${myidx}',				'${attach_idx}', 		'${prize_target}',
+		 '${prize_cont}', 			'${prize_value}', 		
+		 now()+0,					'${doc_type}',			'${prize_target_year}'
+		)
+	</insert>
+	<update id="uptPrize" parameterType="hashmap">
+		UPDATE  doc_prize set
+		 attach_idx = '${attach_idx}',
+ 		 target='${prize_target}', 			cont='${prize_cont}',
+ 		 prize_value = '${prize_value}', 	submit_date = now()+0,
+ 		 target_year ='${prize_target_year}'
+		where 
+			idx ='${idx}'
+		 
+	</update>
+	
+	<select id="getAttachList" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			doc_type,
+			doc_idx,
+			idx,
+			DATE_FORMAT(final_date,'%Y-%m-%d') as final_date,
+			case 
+			when doc_type='100' then '근태신청서'
+			when doc_type='101' then '지출결의서'
+			when doc_type='102' then '주말출근신청서'
+			when doc_type='103' then '연장근무신청서'
+			when doc_type='104' then '품의서'
+			when doc_type='105' then '포상신청서'
+			 END AS doc_nm
+		 FROM approval_line WHERE 
+		 	step='결재'
+		 	AND user_idx = '${myidx}'
+	</select>
+	
+	<select id="getNewsFileName" parameterType="hashmap" resultType="hashmap">
+		select detail_receipt, detail_receipt_ori from ${doc_type} where idx = '${idx}'
+	</select>
+	
+	<select id="chkMyLeave" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			t1.*,
+			(
+			SELECT COALESCE(min(bb.leave_cnt),'0') FROM annual_leave_master aa ,annual_leave_user bb WHERE
+			   aa.target_year=t1.date_ymd
+			   and aa.idx = bb.leave_idx
+			   and bb.user_idx='${user_idx}') AS cnt
+			FROM (
+			SELECT 
+			   distinct(LEFT(a.date_ymd,4)) AS date_ymd
+			 FROM (
+			
+			   SELECT STR_TO_DATE('${end_y}-12-31', '%Y-%m-%d') - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY as date_ymd FROM (
+			
+			      SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+			
+			      UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+			
+			   ) AS a
+			
+			   CROSS JOIN (
+			
+			      SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+			
+			      UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+			
+			   ) AS b
+			
+			   CROSS JOIN (
+			
+			      SELECT 0 as a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+			
+			      UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+			
+			   ) AS c
+			
+			) AS a
+			
+			WHERE 1 = 1
+			
+			AND a.date_ymd BETWEEN '${start_ymd} 00:00:00' AND '${end_ymd} 23:59:59'
+			AND DAYOFWEEK(a.date_ymd) != 1 
+			and DAYOFWEEK(a.date_ymd)!=7
+			AND a.date_ymd NOT IN ( SELECT day FROM annual_holiday )
+			ORDER BY a.date_ymd ASC
+		) t1
+	</select>
+	
+	<select id="getMyLeave" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			ifnull(t1.user_leave,0) AS user_leave,
+			
+			case 
+				when t1.over_leave IS NULL then '0'
+				when left(SUBSTRING_INDEX(t1.over_leave,'.',-1),2) BETWEEN 0 AND 24 then CONCAT(SUBSTRING_INDEX(  t1.over_leave,'.',1),'.0')
+				when left(SUBSTRING_INDEX(t1.over_leave,'.',-1),2) BETWEEN 25 AND 49 then CONCAT(SUBSTRING_INDEX(  t1.over_leave,'.',1),'.25')
+				when left(SUBSTRING_INDEX(t1.over_leave,'.',-1),2) BETWEEN 50 AND 74 then CONCAT(SUBSTRING_INDEX(  t1.over_leave,'.',1),'.5')
+				when left(SUBSTRING_INDEX(t1.over_leave,'.',-1),2) BETWEEN 75 AND 99 then CONCAT(SUBSTRING_INDEX(  t1.over_leave,'.',1),'.75')
+				ELSE t1.over_leave
+				END AS over_leave,
+			
+			ifnull(t1.prize_leave,0) AS prize_leave,
+			ifnull(t1.use_leave,0) AS use_leave, 
+			ifnull(t1.use_cancel_leave,0) AS use_cancel_leave,
+			ifnull(t1.early_leave,0) AS early_leave,
+			ifnull(t1.early_cancel_leave,0) AS early_cancel_leave,
+			ifnull(t1.half_leave,0) AS half_leave,
+			ifnull(t1.half_cancel_leave,0) AS half_cancel_leave
+		FROM (
+			SELECT 
+			/* 부여 연차  */
+			(	SELECT
+					b.leave_cnt
+				FROM annual_leave_master a,annual_leave_user b WHERE
+					a.target_year='${targetYmd}'
+					AND a.idx = b.leave_idx
+					AND b.user_idx='${user_idx}' ) AS user_leave, 
+					
+			/* 야근 연차  */
+			/*2022년도 용 야근 연차 로직*/
+			<if test="targetYmd != '2021'.toString()">
+				getOverNightCnt('${user_idx}','${targetYmd}') as over_leave, 
+			</if>
+			
+			<if test="targetYmd eq '2021'.toString()">
+			/*2021년 까지 사용할 야근 연차 로직*/
+			left((SELECT
+				sum(TIME_TO_SEC(over_night_work_time)) / 28800 AS cnt1
+			FROM user_guntae_day WHERE
+				user_idx='${user_idx}'
+				AND LEFT(submit_year,4) <![CDATA[>=]]> '2020'
+				AND submit_year <![CDATA[<]]> '2021-07-01' 
+				AND DAYOFWEEK(submit_year) != '1' 
+				and DAYOFWEEK(submit_year) != '7') + 
+			(SELECT
+				(sum(TIME_TO_SEC(over_night_work_time))/2) / 28800 AS cnt2
+			FROM user_guntae_day WHERE
+				user_idx='${user_idx}'
+				AND submit_year <![CDATA[>=]]> '2021-07-01' 
+				AND DAYOFWEEK(submit_year) != '1' 
+				and DAYOFWEEK(submit_year) != '7'),5) AS over_leave,
+			</if>
+			
+			
+			
+			 /* 포상 연차   */
+			(	select
+					SUM(prize_value)
+				FROM approval_line a, doc_prize b where
+					a.doc_type = b.doc_type
+					AND a.doc_idx = b.idx
+					AND a.step ='결재'
+					AND b.target_year='${targetYmd}'
+					AND b.target='${user_idx}' ) AS prize_leave,
+			
+			 /* 사용 연차  */
+			guntae_cnt('${targetYmd}','${user_idx}','연차')  AS use_leave,
+			
+			 /* 취소 연차 */
+			guntae_cnt('${targetYmd}','${user_idx}','연차취소') AS use_cancel_leave,
+			
+
+			/*  조퇴 연차 */
+			(
+				SELECT
+				
+					COUNT(*) * 0.25 AS cnt
+			
+				FROM approval_line a, doc_guntae b WHERE
+					a.doc_idx = b.idx
+					AND a.user_idx='${user_idx}'
+					AND b.user_idx=a.user_idx
+					AND a.doc_type = b.doc_type
+					AND b.leave_type='조퇴'
+					AND a.step ='결재'
+					AND left(b.start_ymd,'4') ='${targetYmd}'
+			) early_leave,
+			
+			/* 조퇴 취소 연차 */
+			(
+				SELECT
+					COUNT(*) * 0.25 AS cnt
+				FROM approval_line a, doc_guntae b WHERE
+					a.doc_idx = b.idx
+					AND a.user_idx='${user_idx}'
+					AND b.user_idx=a.user_idx
+					AND a.doc_type = b.doc_type
+					AND b.leave_type='조퇴취소'
+					AND a.step ='결재'
+					AND left(b.start_ymd,'4') ='${targetYmd}'
+			) early_cancel_leave,
+			/* 반차 사용 */
+			(
+				SELECT
+					COUNT(*)*0.5 AS cnt
+				FROM approval_line a, doc_guntae b WHERE
+					a.doc_idx = b.idx
+					AND a.user_idx='${user_idx}'
+					AND b.user_idx=a.user_idx
+					AND a.doc_type = b.doc_type
+					AND (b.leave_type='오전반차' OR b.leave_type='오후반차')
+					AND a.step ='결재'
+					AND left(b.start_ymd,'4') ='${targetYmd}'
+			) AS half_leave,
+			
+			/* 반차 취소 */
+			(
+				SELECT
+					COUNT(*)*0.5 AS cnt
+				FROM approval_line a, doc_guntae b WHERE
+					a.doc_idx = b.idx
+					AND a.user_idx='${user_idx}'
+					AND b.user_idx=a.user_idx
+					AND a.doc_type = b.doc_type
+					AND b.leave_type='반차취소'
+					AND a.step ='결재'
+					AND left(b.start_ymd,'4') ='${targetYmd}'
+			) AS half_cancel_leave
+		) t1
+		
+				
+	</select>
+	
+	
+	<select id="getLeaveCnt" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			COUNT(*) AS cnt
+		FROM (
+		   SELECT STR_TO_DATE( '${guntae_end_ymd}', '%Y-%m-%d') - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY as date_ymd FROM (
+		
+		      SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+		
+		      UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+		
+		   ) AS a
+		
+		   CROSS JOIN (
+		
+		      SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+		
+		      UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+		
+		   ) AS b
+		
+		   CROSS JOIN (
+		
+		      SELECT 0 as a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+		
+		      UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+		
+		   ) AS c
+		
+		) AS a
+		WHERE 1 = 1
+		AND a.date_ymd BETWEEN '${guntae_start_ymd}' AND '${guntae_end_ymd}'
+		AND DAYOFWEEK(a.date_ymd) != '1' 
+		and DAYOFWEEK(a.date_ymd) != '7'
+		AND a.date_ymd NOT IN (SELECT DAY FROM annual_holiday)
+		AND LEFT(a.date_ymd,'4') = '${targetYmd}'
+	</select>
+	
+	<update id="delLine" parameterType="hashmap">
+		UPDATE  approval_line set
+		 isDel='Y'
+		where 
+			idx ='${idx}'
+		 
+	</update>
+	
+	<select id="chk_imsi" parameterType="hashmap" resultType="hashmap">
+		select
+			*
+		from approval_line where
+			idx='${idx}'
+	</select>
+</mapper>

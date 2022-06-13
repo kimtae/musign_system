@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/musignlibMapper">
+
+	<select id="getMusignlibListCount" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			count(*) as CNT
+		FROM musign_lib WHERE 1=1
+			<if test="!search_title.equals('')">	
+				and post_title like '%${search_title}%'
+			</if>
+			
+			<if test="!search_content.equals('')">	
+				and post_content like '%${search_title}%'
+			</if>
+	</select>	
+	
+	<select id="getMusignlibList" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			idx,
+			post_title
+		FROM musign_lib WHERE 1=1
+			<if test="!search_title.equals('')">	
+				and post_title like '%${search_title}%'
+			</if>
+			
+			<if test="!search_content.equals('')">	
+				and post_content like '%${search_title}%'
+			</if>
+	
+			<if test="!order_by.equals('') and !sort_type.equals('')">
+				order by ${sort_type} ${order_by}
+			</if>
+			
+			limit ${s_rownum}, ${e_rownum}
+	</select>
+	
+	<select id="getPostContentInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			*
+		from musign_lib WHERE
+			 idx = '${idx}'
+	</select>	
+	
+</mapper>

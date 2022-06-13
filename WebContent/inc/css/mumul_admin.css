@@ -1,0 +1,228 @@
+/* 관리자 페이지 */
+/* Common */
+input[type="text"], textarea{
+    height: 50px;
+    padding: 0 20px;
+    border-radius: 25px;
+    border: 1px solid #eee;
+}
+textarea{
+	min-height: 200px;
+	resize: none;
+}
+.input_chk{
+	position: relative;
+}
+.input_chk input[type="checkbox"]{
+    margin: 0;
+    position: absolute;
+}
+.input_chk input[type="checkbox"]:checked + .input_chk_label:before{
+    background-image: url(../../img/icon/general_icon_chk_on.png);
+}
+.input_chk + .input_chk{
+    margin-left: 30px;
+}
+.input_chk_label{
+	line-height: 25px;
+}
+.input_chk_label:before{
+    content: '';
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    background: url(../../img/icon/general_icon_chk_off.png);
+    cursor: pointer;
+    margin: -2px 10px 0 0;
+}
+.input_radio{
+	position: relative;
+	display:inline-block;
+	height:25px;
+}
+.input_radio + .input_radio{
+    margin-left: 30px;
+}
+.input_radio input[type="radio"]{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.input_radio input[type="radio"] + label{
+    line-height: 25px;
+}
+.input_radio input[type="radio"] + label:before{
+    content: '';
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    border: 1px solid #000;
+    vertical-align: middle;
+    margin: -3px 6px 0 0;
+    box-sizing: border-box;
+}
+.input_radio input[type="radio"]:checked + label:before{
+    border-color: #000;
+}
+.input_radio input[type="radio"]:checked + label:after{
+    content: '';
+    width: 9px;
+    height: 9px;
+    background: #000;
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    border-radius: 100%;
+    margin-top: -4px;
+}
+.btn_type_v1{
+	background: #000;
+	color: #fff;
+}
+.float_btn{
+	width: 200px;
+	height: 60px;
+	font-size: 14px;
+	border-radius: 30px;
+}
+
+/* Layout */
+.mumul_admin{
+    display: flex;
+    height: 100vh;
+    background: #eee;
+    overflow: hidden;
+	font-size: 16px;
+}
+.mumul_admin #header{
+    width: 310px;
+    background: #000;
+}
+.mumul_admin #container{
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* 헤더 */
+.header_wrap{
+    padding: 40px 0 0 52px;
+    color: #fff;
+}
+.header_wrap .logo{
+	padding-left: 16px;
+}
+.gnb{
+	margin-top: 100px;
+}
+.gnb a{
+	display: block;
+	height: 70px;
+	line-height: 70px;
+	padding: 0 30px;
+	font-size: 18px;
+	font-weight: 500;
+	overflow: hidden;
+	border-radius: 50px 0 0 50px;
+}
+.gnb li.on a{
+	color: #000;
+	background: #eee;
+}
+
+/* 컨텐츠 */
+.container_wrap{
+    padding: 40px 85px;
+}
+.breadcrumb{
+    color: #888;
+    margin-bottom: 0.4rem;
+}
+.breadcrumb ul{
+    display: flex;
+}
+.breadcrumb li + li:before{
+	content: '';
+	display: inline-block;
+	vertical-align: middle;
+	width: 6px;
+	height: 6px;
+	border: 1px solid #888;
+	border-width: 0 1px 1px 0;
+	transform: rotate(-45deg);
+	margin: -5px 9px 0 6px;
+}
+.container_top .page_title{
+	font-size: 2rem;
+}
+
+.mumul_admin_content{
+    display: flex;
+    position: relative;
+    padding-top: 70px;
+}
+.category_tree_section{
+	width: 24.6%;
+}
+.category_detail_section{
+	flex: 1;
+	padding-left: 40px;
+}
+.mumul_admin_content .section .content_box{
+    min-height: 70vh;
+	border-radius: 15px;
+	background: #fff;
+	position:relative;
+}
+.category_detail_section .content_box{
+    padding: 30px 68px;
+}
+.category_wrapper h3{
+    background: #000;
+    color: #fff;
+    padding: 14px 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 15px 15px 0 0;
+}
+.category_btn_box{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    top: -40px;
+    left: 0;
+}
+.category_btn{
+    border-bottom: 1px solid #000;
+}
+.category_delete_btn img{
+    vertical-align: middle;
+    margin: -3px 5px 0 0;
+}
+.category_detail_section dl{
+    display: table;
+    width: 100%;
+    margin: 20px 0;
+}
+.category_detail_section dt, .category_detail_section dd{
+    display: table-cell;
+    vertical-align: top;
+}
+.category_detail_section dt{
+    width: 100px;
+    font-weight: 500;
+    padding-top: 12px;
+}
+.category_detail_section input[type="text"], .category_detail_section textarea{
+    width: 70%;
+}
+.category_detail_section .input_radio_wrap{
+    margin-top: 11px;
+}
+.mumul_admin_content .save_btn_wrap{
+    position: absolute;
+    top: -5px;
+    right: 0;
+}

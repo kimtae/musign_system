@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	
+	xmlns:task="http://www.springframework.org/schema/task"
+	
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+	
+	<task:annotation-driven/>
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="/WEB-INF/config/system.properties"></property>
+	</bean>
+
+	<!-- 전자결재 단 -->
+	<bean class="musign.controller.family.MoController"/>
+	<bean class="musign.controller.family.MainController"/>
+	<bean class="musign.controller.family.UserController"/>
+	<bean class="musign.controller.family.BoardController"/>
+	<bean class="musign.controller.family.LeaveController"/>
+	<bean class="musign.controller.family.AllowController"/>
+	<bean class="musign.controller.family.DosignController"/>
+	<bean class="musign.controller.family.OperController"/>
+	<bean class="musign.controller.family.TempController"/>
+	<bean class="musign.controller.family.SalesController"/>
+	<bean class="musign.controller.family.SystemController"/>
+	<bean class="musign.controller.family.MypageController"/>
+	<bean class="musign.controller.family.TeamController"/>
+	<bean class="musign.controller.family.GuntaeController"/>
+	<bean class="musign.controller.family.MusignlibController"/>
+	<bean class="musign.controller.family.RecruitController"/>
+	<bean class="musign.controller.family.KpiController"/>
+	<bean class="musign.controller.family.RoomController"/>
+	<bean class="musign.controller.mumul.MumulController"/>
+
+	
+	<bean class="musign.model.family.MoDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.SystemDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.MypageDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.MainDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.UserDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.BoardDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.LeaveDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.AllowDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.DosignDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.OperDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.TempDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.SalesDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.TeamDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.GuntaeDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.MusignlibDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.RecruitDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.KpiDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.family.RoomDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.mumul.MumulDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	
+	
+	<!-- 유지보수 단 -->
+	<bean class="musign.controller.mo.MainController"/>
+	<bean class="musign.controller.mo.OfferController"/>
+	<bean class="musign.controller.mo.TargetController"/>
+	<bean class="musign.controller.mo.UserController"/>
+
+
+	<bean class="musign.model.mo.MainDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.mo.OfferDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.mo.TargetDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	<bean class="musign.model.mo.UserDAO"><property name="sqlSessionFactory" ref="sqlSessionFactory" /></bean>
+	
+	
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="beanNameViewResolver"
+		class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order" value="0" />
+	</bean>
+	
+	<mvc:annotation-driven />
+	
+	<bean id="interceptor" class="musign.classes.Interceptor"/>
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/family/allow/*"/>
+			<mvc:exclude-mapping path="/family/allow/write*"/>
+			<ref bean="interceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	 
+	<context:annotation-config />
+</beans>

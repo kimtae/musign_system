@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/kpiMapper">
+	 <insert id="insKpi" parameterType="hashmap">
+		insert into kpi
+		set
+		user_idx	 	= '${user_idx}',
+		year			= '${year}',
+		target			= '${target}',
+		detail	 		= '${detail}',
+		output_file 	= '${output_file}'
+	</insert>
+	 <update id="upKpi" parameterType="hashmap">
+		update kpi
+		set
+		target	 	= '${target}',
+		detail	 	= '${detail}',
+		output_file = '${output_file}'
+		where 
+		user_idx	 = '${user_idx}'
+		and year	 = '${year}'
+	</update>
+	 <insert id="insOkr" parameterType="hashmap">
+		insert into okr
+		set
+		user_idx		 = '${user_idx}',
+		year			 = '${year}',
+		period			 = '${period}',
+		target1			 = '${target1}',
+		detail1			 = '${detail1}',
+		detail_date1	 = '${detail_date1}',
+		detail_step1	 = '${detail_step1}',
+		output_file1	 = '${output_file1}',
+		target2			 = '${target2}',
+		detail2			 = '${detail2}',
+		detail_date2	 = '${detail_date2}',
+		detail_step2	 = '${detail_step2}',
+		output_file2	 = '${output_file2}',
+		target3			 = '${target3}',
+		detail3			 = '${detail3}',
+		detail_date3	 = '${detail_date3}',
+		detail_step3	 = '${detail_step3}',
+		output_file3	 = '${output_file3}',
+		target4			 = '${target4}',
+		detail4			 = '${detail4}',
+		detail_date4	 = '${detail_date4}',
+		detail_step4	 = '${detail_step4}',
+		output_file4	 = '${output_file4}',
+		target5			 = '${target5}',
+		detail5			 = '${detail5}',
+		detail_date5	 = '${detail_date5}',
+		detail_step5	 = '${detail_step5}',
+		output_file5	 = '${output_file5}'
+	</insert>
+	 <update id="upOkr" parameterType="hashmap">
+		update okr
+		set
+		target1			 = '${target1}',
+		detail1			 = '${detail1}',
+		detail_date1	 = '${detail_date1}',
+		detail_step1	 = '${detail_step1}',
+		output_file1	 = '${output_file1}',
+		target2			 = '${target2}',
+		detail2			 = '${detail2}',
+		detail_date2	 = '${detail_date2}',
+		detail_step2	 = '${detail_step2}',
+		output_file2	 = '${output_file2}',
+		target3			 = '${target3}',
+		detail3			 = '${detail3}',
+		detail_date3	 = '${detail_date3}',
+		detail_step3	 = '${detail_step3}',
+		output_file3	 = '${output_file3}',
+		target4			 = '${target4}',
+		detail4			 = '${detail4}',
+		detail_date4	 = '${detail_date4}',
+		detail_step4	 = '${detail_step4}',
+		output_file4	 = '${output_file4}',
+		target5			 = '${target5}',
+		detail5			 = '${detail5}',
+		detail_date5	 = '${detail_date5}',
+		detail_step5	 = '${detail_step5}',
+		output_file5	 = '${output_file5}'
+		where
+		user_idx			 = '${user_idx}'
+		and year			 = '${year}'
+		and period			 = '${period}'
+	</update>
+	 <insert id="insOkr_leader" parameterType="hashmap">
+		insert into okr
+		set
+		user_idx		= '${user_idx}',
+		year			= '${year}',
+		period			= '${period}',
+		is_end1			= '${is_end1}',
+		comment1	 	= '${comment1}',
+		is_end2	 		= '${is_end2}',
+		comment2	 	= '${comment2}',
+		is_end3	 		= '${is_end3}',
+		comment3	 	= '${comment3}',
+		is_end4	 		= '${is_end4}',
+		comment4	 	= '${comment4}',
+		is_end5	 		= '${is_end5}',
+		comment5	 	= '${comment5}',
+		interv_date 	= '${interv_date}',
+		interv_comment 	= '${interv_comment}'
+	</insert>
+	 <update id="upOkr_leader" parameterType="hashmap">
+		update okr
+		set
+		is_end1			= '${is_end1}',
+		comment_date1	 	= '${comment_date1}',
+		comment1	 	= '${comment1}',
+		is_end2	 		= '${is_end2}',
+		comment_date2	 	= '${comment_date2}',
+		comment2	 	= '${comment2}',
+		is_end3	 		= '${is_end3}',
+		comment_date3	 	= '${comment_date3}',
+		comment3	 	= '${comment3}',
+		is_end4	 		= '${is_end4}',
+		comment_date4	 	= '${comment_date4}',
+		comment4	 	= '${comment4}',
+		is_end5	 		= '${is_end5}',
+		comment_date5	 	= '${comment_date5}',
+		comment5	 	= '${comment5}',
+		interv_date 	= '${interv_date}',
+		interv_comment 	= '${interv_comment}'
+		where
+		user_idx			 = '${user_idx}'
+		and year			 = '${year}'
+		and period			 = '${period}'
+	</update>
+	 <update id="upOkr_step" parameterType="hashmap">
+		update okr
+		set
+		step = '${step}'
+		where
+		user_idx			 = '${user_idx}'
+		and year			 = '${year}'
+		and period			 = '${period}'
+	</update>
+	
+	<select id="getKpi" parameterType="hashmap" resultType="hashmap">
+		select * from kpi where user_idx = '${user_idx}' and year = '${year}'
+	</select>
+	<select id="getOkr" parameterType="hashmap" resultType="hashmap">
+		select * from okr where user_idx = '${user_idx}' and year = '${year}' and period = '${period}'
+	</select>
+	<select id="getUser" parameterType="hashmap" resultType="hashmap">
+		select *, (select name from level where idx = user.level) as level_nm, DATEDIFF(now(),regi_date) as user_long from user where idx = '${user_idx}'
+	</select>
+	
+	<select id="getKpiListCount" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			COUNT(*) AS CNT
+		FROM okr aa, user bb, team cc, chmod dd WHERE
+			aa.user_idx = bb.idx
+			AND bb.team = cc.idx
+			AND bb.chmod = dd.idx
+			<if test="!search_name.equals('')">
+				AND bb.NAME LIKE '%${search_name}%'
+			</if>
+	</select>
+
+	<select id="getKpiList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			cc.team_kr as team_nm,
+			bb.name,
+			dd.NAME as chmod_nm,
+			aa.period,
+			case 
+				when aa.period = 1 then aa.output_file1
+				when aa.period = 2 then aa.output_file2
+				when aa.period = 3 then aa.output_file3
+				when aa.period = 4 then aa.output_file4
+				when aa.period = 5 then aa.output_file5
+			END AS output_file
+		FROM okr aa, user bb, team cc, chmod dd WHERE
+			aa.user_idx = bb.idx
+			AND bb.team = cc.idx
+			AND bb.chmod = dd.idx
+			<if test="!search_name.equals('')">
+				AND bb.NAME LIKE '%${search_name}%'
+			</if>
+			limit ${s_rownum}, ${e_rownum}
+	</select>
+</mapper>

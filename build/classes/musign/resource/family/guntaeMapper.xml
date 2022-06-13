@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/guntaeMapper">
+	<select id="getGuntaeListCount" parameterType="hashmap" resultType="hashmap">
+	select
+		count(*) as CNT
+	FROM 
+	(
+		<if test="leaderChk != 'N'.toString()">
+		SELECT 
+			bb.name as kor_nm,
+			aa.user_idx,
+			aa.submit_year,
+			aa.min_time,
+			aa.max_time,
+			aa.late_time,
+			aa.over_work_time,
+			aa.over_night_work_time,
+			aa.whole_work_time,
+			aa.day_status
+		FROM user_guntae_day aa, user bb WHERE 
+			bb.idx=aa.user_idx 
+			AND bb.idx!='${myidx}'
+			AND bb.chmod >= '${chmodidx}'
+			<if test="!teamidx.equals('')">
+				AND bb.team = '${teamidx}'
+			</if>
+			<if test="!end_ymd.equals('')">
+				and aa.submit_year <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and aa.submit_year <![CDATA[>=]]> '${start_ymd}'
+			</if>	
+			
+			<if test="!search_name.equals('')">
+				and bb.name like '%${search_name}%'
+			</if>
+			
+			<if test="!day_status.equals('')">
+				and aa.day_status = '${day_status}'
+			</if>
+			
+		union all
+		
+	</if>
+	
+		SELECT 
+			bb.name as kor_nm,
+			aa.user_idx,
+			aa.submit_year,
+			aa.min_time,
+			aa.max_time,
+			aa.late_time,
+			aa.over_work_time,
+			aa.over_night_work_time,
+			aa.whole_work_time,
+			aa.day_status
+		FROM user_guntae_day aa, user bb WHERE 
+			bb.idx=aa.user_idx
+			and aa.user_idx ='${myidx}'
+			<if test="!end_ymd.equals('')">
+				and aa.submit_year <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and aa.submit_year <![CDATA[>=]]> '${start_ymd}'
+			</if>	
+			
+			<if test="!search_name.equals('')">
+				and bb.name like '%${search_name}%'
+			</if>
+			
+			<if test="!day_status.equals('')">
+				and aa.day_status = '${day_status}'
+			</if>
+		) t1
+	</select>	
+	
+	<select id="getGuntaeList" parameterType="hashmap" resultType="hashmap">
+	<if test="leaderChk != 'N'.toString()">
+		SELECT 
+			bb.name as kor_nm,
+			aa.user_idx,
+			aa.submit_year,
+			aa.min_time,
+			aa.max_time,
+			aa.late_time,
+			aa.over_work_time,
+			aa.over_night_work_time,
+			aa.whole_work_time,
+			aa.day_status
+		FROM user_guntae_day aa, user bb WHERE 
+			bb.idx=aa.user_idx
+			AND bb.idx!='${myidx}'
+			AND bb.chmod >= '${chmodidx}'
+			<if test="!teamidx.equals('')">
+				AND bb.team = '${teamidx}'
+			</if>
+			<if test="!end_ymd.equals('')">
+				and aa.submit_year <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and aa.submit_year <![CDATA[>=]]> '${start_ymd}'
+			</if>	
+			
+			<if test="!search_name.equals('')">
+				and bb.name like '%${search_name}%'
+			</if>
+			
+			<if test="!day_status.equals('')">
+				and aa.day_status = '${day_status}'
+			</if>
+			
+		union all
+	</if>
+	
+		SELECT 
+			bb.name as kor_nm,
+			aa.user_idx,
+			aa.submit_year,
+			aa.min_time,
+			aa.max_time,
+			aa.late_time,
+			aa.over_work_time,
+			aa.over_night_work_time,
+			aa.whole_work_time,
+			aa.day_status
+		FROM user_guntae_day aa, user bb WHERE 
+			bb.idx=aa.user_idx
+			and aa.user_idx ='${myidx}'
+			<if test="!end_ymd.equals('')">
+				and aa.submit_year <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and aa.submit_year <![CDATA[>=]]> '${start_ymd}'
+			</if>	
+			
+			<if test="!search_name.equals('')">
+				and bb.name like '%${search_name}%'
+			</if>
+			
+			<if test="!day_status.equals('')">
+				and aa.day_status = '${day_status}'
+			</if>
+			
+			<if test="!order_by.equals('') and !sort_type.equals('')">
+				order by ${sort_type} ${order_by}
+			</if>
+			
+			limit ${s_rownum}, ${e_rownum}
+			
+			
+	</select>
+	
+	<select id="getGuntaeListCountByManager" parameterType="hashmap" resultType="hashmap">
+	select
+		count(*) as CNT
+	FROM 
+	(
+		
+		SELECT 
+			bb.name as kor_nm,
+			aa.user_idx,
+			aa.submit_year,
+			aa.min_time,
+			aa.max_time,
+			aa.late_time,
+			aa.over_work_time,
+			aa.over_night_work_time,
+			aa.whole_work_time,
+			aa.day_status
+		FROM user_guntae_day aa, user bb WHERE 
+			bb.idx=aa.user_idx 
+			AND bb.idx!='${myidx}'
+			<if test="!teamidx.equals('')">
+				AND bb.team = '${teamidx}'
+			</if>
+			<if test="!end_ymd.equals('')">
+				and aa.submit_year <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and aa.submit_year <![CDATA[>=]]> '${start_ymd}'
+			</if>	
+			
+			<if test="!search_name.equals('')">
+				and bb.name like '%${search_name}%'
+			</if>
+			
+			<if test="!day_status.equals('')">
+				and aa.day_status = '${day_status}'
+			</if>
+			
+		union all
+		
+
+	
+		SELECT 
+			bb.name as kor_nm,
+			aa.user_idx,
+			aa.submit_year,
+			aa.min_time,
+			aa.max_time,
+			aa.late_time,
+			aa.over_work_time,
+			aa.over_night_work_time,
+			aa.whole_work_time,
+			aa.day_status
+		FROM user_guntae_day aa, user bb WHERE 
+			bb.idx=aa.user_idx
+			and aa.user_idx ='${myidx}'
+			<if test="!end_ymd.equals('')">
+				and aa.submit_year <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and aa.submit_year <![CDATA[>=]]> '${start_ymd}'
+			</if>	
+			
+			<if test="!search_name.equals('')">
+				and bb.name like '%${search_name}%'
+			</if>
+			
+			<if test="!day_status.equals('')">
+				and aa.day_status = '${day_status}'
+			</if>
+		) t1
+	</select>
+	
+	<select id="getGuntaeListByManager" parameterType="hashmap" resultType="hashmap">
+	
+		SELECT 
+			bb.name as kor_nm,
+			aa.user_idx,
+			aa.submit_year,
+			aa.min_time,
+			aa.max_time,
+			aa.late_time,
+			aa.over_work_time,
+			aa.over_night_work_time,
+			aa.whole_work_time,
+			aa.day_status
+		FROM user_guntae_day aa, user bb WHERE 
+			bb.idx=aa.user_idx
+			AND bb.idx!='${myidx}'
+			<if test="!teamidx.equals('')">
+				AND bb.team = '${teamidx}'
+			</if>
+			<if test="!end_ymd.equals('')">
+				and aa.submit_year <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and aa.submit_year <![CDATA[>=]]> '${start_ymd}'
+			</if>	
+			
+			<if test="!search_name.equals('')">
+				and bb.name like '%${search_name}%'
+			</if>
+			
+			<if test="!day_status.equals('')">
+				and aa.day_status = '${day_status}'
+			</if>
+			
+		union all
+	
+	
+		SELECT 
+			bb.name as kor_nm,
+			aa.user_idx,
+			aa.submit_year,
+			aa.min_time,
+			aa.max_time,
+			aa.late_time,
+			aa.over_work_time,
+			aa.over_night_work_time,
+			aa.whole_work_time,
+			aa.day_status
+		FROM user_guntae_day aa, user bb WHERE 
+			bb.idx=aa.user_idx
+			and aa.user_idx ='${myidx}'
+			<if test="!end_ymd.equals('')">
+				and aa.submit_year <![CDATA[<=]]> '${end_ymd}'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				and aa.submit_year <![CDATA[>=]]> '${start_ymd}'
+			</if>	
+			
+			<if test="!search_name.equals('')">
+				and bb.name like '%${search_name}%'
+			</if>
+			
+			<if test="!day_status.equals('')">
+				and aa.day_status = '${day_status}'
+			</if>
+			
+			<if test="!order_by.equals('') and !sort_type.equals('')">
+				order by ${sort_type} ${order_by}
+			</if>
+			
+			limit ${s_rownum}, ${e_rownum}
+			
+			
+	</select>
+	
+	<update id="uptGuntaeData" parameterType="hashmap">
+		update user_guntae_day set 
+		    min_time ='${min_time}',
+		    max_time ='${max_time}',
+		    late_time ='${late_time}',
+		    over_work_time = '${over_work_time}',
+		    over_night_work_time = '${over_night_work_time}',
+		    whole_work_time = '${whole_work_time}',
+		    day_status = '${day_status}'
+		where 
+			user_idx ='${user_idx}'
+			and submit_year = '${submit_year}'
+	</update>
+	
+</mapper>

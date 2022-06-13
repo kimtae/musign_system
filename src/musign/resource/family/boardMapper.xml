@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/boardMapper">
+
+	<!-- 게시글 목록 조회  및 검색 -->
+	<select id="getBoardList" parameterType="hashmap" resultType="hashmap">
+			SELECT		
+				board.idx,
+				board.board_type,
+				board.title,
+				board.cont,
+				board.visit,
+				date_format(board.submit_date, '%Y-%m-%d') AS submit_date, 
+				user.name, 
+				user.use_yn as user_use_yn
+			from board
+				join user
+				on board.user_idx = user.idx
+			where
+				board.use_yn ='Y'
+				
+				<if test="!search_type.equals('')">
+					<!-- 제목 검색 -->
+					<if test="search_type eq 'title'.toString()">
+						and title LIKE '%${searchName}%'  
+					</if>
+					<!-- 제목 + 내용 검색 -->
+					<if test="search_type eq 'both'.toString()">
+						and title LIKE '%${searchName}%'  
+						or 	cont LIKE '%${searchName}%'
+					</if>
+					<!-- 게시물 종류 검색 -->
+					<if test="search_type eq 'type'.toString()">
+						and board_type = '${searchName}'  
+					</if>
+				</if>
+				
+				<if test="search_type.equals('')">
+						<!-- 게시물 공지 만 추출 -->
+							and board_type = '공지'  
+				</if>
+				order by idx desc;
+	</select>
+
+	<!-- 게시글 단일 조회 -->
+	<select id="getBoardOne" parameterType="hashmap" resultType="hashmap">
+			SELECT		
+				board.idx,
+				board.user_idx,
+				board.board_type,
+				board.title,
+				board.cont,
+				board.board_file,
+				board.board_file_ori,
+				board.visit,
+				date_format(now(), '%Y-%m-%d') AS submit_date, 
+				user.name, 
+				user.use_yn as user_use_yn
+			from board
+				join user
+				on board.user_idx = user.idx
+			where
+				board.idx = '${idx}'
+	</select>
+	
+	<!-- 이전 게시물 조회 -->
+	<select id="prev_getBoardOne" parameterType="hashmap" resultType="hashmap">
+			SELECT board.idx from board where idx <![CDATA[<]]> '${idx}' order by board.idx desc limit 1		
+	</select>
+	
+	<!-- 다음 게시물 조회 -->
+	<select id="next_getBoardOne" parameterType="hashmap" resultType="hashmap">
+			SELECT board.idx from board where idx <![CDATA[>]]> '${idx}' order by board.idx limit 1		
+	</select>
+	
+
+	<!-- 게시물 등록 -->
+	<insert id="board_write" parameterType="hashmap">
+			INSERT into board
+			(
+				idx,
+				user_idx,	title,	  		cont,	  board_type,
+				board_file,	board_file_ori,	submit_date
+			)
+			VALUES
+			(
+				#{idx},
+				#{user_idx},	#{title},	 		#{cont}, 	#{board_type},
+				#{board_file},	#{board_file_ori},	now()+0
+			)
+	</insert>
+	
+	<!-- 게시물 수정 -->
+	<update id="board_edit" parameterType="hashmap">
+			UPDATE board set
+				title = #{title},
+				cont = #{cont},
+				board_type = #{board_type},
+				board_file = #{board_file},
+				board_file_ori = #{board_file_ori}
+			where
+				idx = #{idx}
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="board_del" parameterType="hashmap">
+			DELETE from board where idx = #{idx}
+	</delete>
+
+	<!-- 메인페이지 '공지' 만 조회 -->
+	<select id="board_notice" parameterType="hashmap" resultType="hashmap">
+			SELECT
+				board.*, user.name, user.use_yn as user_use_yn
+			from board
+				join user
+				on board.user_idx = user.idx
+			WHERE board_type = '공지'
+	</select>
+	
+	<select id="getfilelist" parameterType="hashmap" resultType="hashmap">
+	
+		SELECT
+			*
+		FROM doc_jicul WHERE
+			idx <![CDATA[<]]> 1085
+			
+	
+	
+	</select>
+	
+</mapper>

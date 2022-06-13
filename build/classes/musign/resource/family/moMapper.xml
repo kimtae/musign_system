@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/moMapper">
+	<select id="getMoPlanList" parameterType="hashmap" resultType="hashmap">
+		select
+			*
+		from mo_plan
+	</select>
+	
+	<insert id="addMoPlan" parameterType="hashmap">		
+        INSERT INTO mo_plan
+		(
+			submit_date
+		)
+		VALUES
+		(
+			NOW()+0
+		)
+	</insert>
+	
+	<delete id="delMoPlan" parameterType="hashmap">
+			DELETE from mo_plan where idx = #{idx}
+	</delete>
+	
+	<update id="uptMoPlan" parameterType="hashmap">		
+        update mo_plan set
+ 			grade_nm = '${grade_nm}',
+ 			mon_amount = '${mon_amount}',
+ 			t_mon_amount = '${t_mon_amount}',
+ 			per_amount = '${per_amount}',
+ 			year_amount = '${year_amount}'
+		where 
+			idx = '${idx}'
+	</update>
+	
+	<select id="getMoCateList" parameterType="hashmap" resultType="hashmap">
+		select
+			*
+		from mo_mr
+	</select>
+	
+	<insert id="addMoCate" parameterType="hashmap">		
+        INSERT INTO mo_mr
+		(
+			mr_type,mr_type2,mr_cost,submit_date
+		)
+		VALUES
+		(
+			'|','|','|',NOW()+0
+		)
+	</insert>
+	
+	<delete id="delMoCate" parameterType="hashmap">
+			DELETE from mo_mr where idx = #{idx}
+	</delete>
+	
+	<select id="getGradeList" parameterType="hashmap" resultType="hashmap">
+		select
+			*
+		from mo_plan where
+			grade_nm IS NOT null
+	</select>
+	
+	<select id="getProjectList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			aa.*
+		FROM sale_info aa, sale_estimate bb WHERE
+			bb.sale_idx = aa.idx
+			AND bb.contract_yn='Y'
+			AND idx NOT IN (SELECT sale_idx FROM mo_project)
+			ORDER BY submit_date desc
+	</select>
+	
+	<insert id="add_project" parameterType="hashmap">		
+        insert into mo_project set
+        	project_type='${project_type}',
+        	sale_idx='${sale_idx}',
+      		grade='${grade}',
+      		edit_cnt='${edit_cnt}',
+      		manager_nm='${manager_nm}',
+      		manager_level='${manager_level}',
+      		phone_no1='${phone_no1}',
+      		phone_no2='${phone_no2}',
+      		phone_no3='${phone_no3}',
+      		email='${email}',
+      		business_no='${business_no}',
+      		contract_amt='${contract_amt}',
+      		start_ymd='${start_ymd}',
+      		end_ymd='${end_ymd}',
+      		month_amt='${month_amt}',
+      		month_cal_day='${month_cal_day}',
+      		tax_date='${tax_date}',
+      		id='${user_id}',
+      		pw='${user_pw}',
+      		ftp_id='${ftp_id}',
+      		ftp_pw='${ftp_pw}',
+      		db_id='${db_id}',
+      		db_pw='${db_pw}',
+      		submit_date=now()+0
+	</insert>
+	
+	<update id="update_project" parameterType="hashmap">		
+        update mo_project set
+        	project_type='${project_type}',
+        	sale_idx='${sale_idx}',
+      		grade='${grade}',
+      		edit_cnt='${edit_cnt}',
+      		manager_nm='${manager_nm}',
+      		manager_level='${manager_level}',
+      		phone_no1='${phone_no1}',
+      		phone_no2='${phone_no2}',
+      		phone_no3='${phone_no3}',
+      		email='${email}',
+      		business_no='${business_no}',
+      		contract_amt='${contract_amt}',
+      		start_ymd='${start_ymd}',
+      		end_ymd='${end_ymd}',
+      		month_amt='${month_amt}',
+      		month_cal_day='${month_cal_day}',
+      		tax_date='${tax_date}',
+      		id='${user_id}',
+      		pw='${user_pw}',
+      		ftp_id='${ftp_id}',
+      		ftp_pw='${ftp_pw}',
+      		db_id='${db_id}',
+      		db_pw='${db_pw}',
+      	where
+      		idx='${idx}'
+	</update>
+	
+</mapper>

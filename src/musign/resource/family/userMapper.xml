@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/userMapper">
+	 <select id="getUser" parameterType="hashmap" resultType="hashmap">
+		select 
+			*,
+			(SELECT NAME FROM level WHERE level.idx = user.`level`) AS level_nm 
+		from user where 
+			use_yn = 'Y'
+			order by chmod
+	</select>
+	
+	<select id="getChmod_kor" parameterType="hashmap" resultType="string">
+		select name from chmod where idx = '${chmod}'
+	</select>
+	
+	<select id="admin_login" resultType="hashmap">
+		SELECT 
+			aa.*,
+			bb.team_kr AS team_nm,
+			cc.NAME AS level_nm,
+			dd.NAME AS chmod_nm,
+			IFNULL((SELECT
+					date_format(WSTime,'%Y-%m-%d %T') 
+				FROM T_SECOM_WORKHISTORY AS aa WHERE
+					aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+					AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)),'') as work_start_time,
+			
+			
+			case
+				when
+					DATE_FORMAT(NOW(), '%Y%m%d')  = '1'  || DATE_FORMAT(NOW(), '%Y%m%d')  = '7' then '주말'
+				when 
+					(SELECT COUNT(*) FROM annual_holiday WHERE `day` = DATE_FORMAT(NOW(), '%Y%m%d')) <![CDATA[>]]> 0 then '공휴일'
+					
+				when
+					(SELECT
+						date_format(WSTime,'%T') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) <![CDATA[>]]> '10:30:00'  then '지각'
+		
+		
+	
+				when 
+					(SELECT
+						date_format(WSTime,'%Y-%m-%d') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) ='' and
+					(SELECT
+						DATE_FORMAT(WCTime,'%Y-%m-%d') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) ='' THEN '결근'
+				
+				
+				when
+					(SELECT
+						date_format(WSTime,'%Y-%m-%d') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) !='' and
+						
+					(SELECT
+						DATE_FORMAT(WCTime,'%Y-%m-%d') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) ='' then '무단퇴근'
+				
+				ELSE
+					'정상출근' END AS guntae_type,
+				(SELECT COUNT(*) FROM user_guntae_day WHERE  day_status='지각' AND  submit_year LIKE CONCAT('%',date_format(NOW()+0,'%Y'),'%') AND user_idx=aa.idx) AS late_cnt
+				
+		from user aa, team bb, level cc, chmod dd WHERE
+			bb.idx = aa.team
+			AND cc.idx = aa.level
+			AND dd.idx = aa.chmod
+			and aa.id = #{login_id} 
+	</select>
+	
+	<select id="loginCheck" resultType="hashmap">
+		SELECT 
+			aa.*,
+			bb.team_kr AS team_nm,
+			cc.NAME AS level_nm,
+			dd.NAME AS chmod_nm,
+			IFNULL((SELECT
+					date_format(WSTime,'%Y-%m-%d %T') 
+				FROM T_SECOM_WORKHISTORY AS aa WHERE
+					aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+					AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)),'') as work_start_time,
+			case
+				when
+					DATE_FORMAT(NOW(), '%Y%m%d')  = '1'  || DATE_FORMAT(NOW(), '%Y%m%d')  = '7' then '주말'
+				when 
+					(SELECT COUNT(*) FROM annual_holiday WHERE `day` = DATE_FORMAT(NOW(), '%Y%m%d')) <![CDATA[>]]> 0 then '공휴일'
+					
+				when
+					(SELECT
+						date_format(WSTime,'%T') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) <![CDATA[>]]> '10:30:00'  then '지각'
+		
+		
+	
+				when 
+					(SELECT
+						date_format(WSTime,'%Y-%m-%d') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) ='' and
+					(SELECT
+						DATE_FORMAT(WCTime,'%Y-%m-%d') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) ='' THEN '결근'
+				
+				
+				when
+					(SELECT
+						date_format(WSTime,'%Y-%m-%d') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) !='' and
+						
+					(SELECT
+						DATE_FORMAT(WCTime,'%Y-%m-%d') 
+					FROM T_SECOM_WORKHISTORY AS aa WHERE
+						aa.WorkDate = DATE_FORMAT(NOW(), '%Y%m%d')
+						AND CONCAT(  left(aa.CardNo,'6'),RIGHT(aa.CardNo,'5')  ) = concat(aa.phone_no1,aa.phone_no2,aa.phone_no3)) ='' then '무단퇴근'
+				
+				ELSE
+					'정상출근' END AS guntae_type,
+					
+				(SELECT COUNT(*) FROM user_guntae_day WHERE  day_status='지각' AND  submit_year LIKE CONCAT('%',date_format(NOW()+0,'%Y'),'%') AND user_idx=aa.idx) AS late_cnt
+					
+		from user aa, team bb, level cc, chmod dd WHERE
+			bb.idx = aa.team
+			AND cc.idx = aa.level
+			AND dd.idx = aa.chmod
+			and aa.id = #{login_id} 
+			and pw = #{login_pw}
+	</select>
+
+	<select id="getleaveInfo" resultType="hashmap">
+			SELECT
+				b.leave_type,
+				b.start_ymd,
+				b.end_ymd,
+				c.NAME AS kor_nm,
+				c.user_color,
+				(SELECT NAME FROM level WHERE idx = c.`level`) AS level_nm,
+				'2' as order_no
+			FROM approval_line a, doc_guntae b, user c where
+				a.doc_type = b.doc_type
+				and c.use_yn='Y'
+				AND a.doc_idx = b.idx
+				AND c.idx = b.user_idx
+				AND a.step ='결재'
+				and a.isDel='N'
+				AND b.leave_type!= '연차취소' 
+				AND b.leave_type!= '반차취소'
+				AND b.leave_type!= '연차'
+				AND b.idx NOT IN (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(attach_idx, '-', -2),'-',1) FROM doc_guntae WHERE user_idx=b.user_idx AND attach_idx !='')
+				and ( b.start_ymd LIKE date_format(NOW()+0,'%Y-%m-%d')
+					or b.end_ymd LIKE date_format(NOW()+0,'%Y-%m-%d') )
+				AND b.user_idx ='${idx}'
+				
+				UNION ALL
+				
+			SELECT
+				b.leave_type,
+				b.start_ymd,
+				b.end_ymd,
+				c.NAME AS kor_nm,
+				c.user_color,
+				(SELECT NAME FROM level WHERE idx = c.`level`) AS level_nm,
+				'4' as order_no
+			FROM approval_line a, doc_guntae b, user c where
+				a.doc_type = b.doc_type
+				and c.use_yn='Y'
+				AND a.doc_idx = b.idx
+				AND c.idx = b.user_idx
+				AND a.step !='결재'
+				AND a.step !='반려'
+				AND a.isDel='N'
+				AND a.imsi_yn='N'
+				AND b.leave_type!= '연차취소'  
+				AND b.leave_type!= '반차취소'
+				AND b.leave_type!= '연차'
+				AND b.idx NOT IN (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(attach_idx, '-', -2),'-',1) FROM doc_guntae WHERE user_idx=b.user_idx AND attach_idx !='') 
+				and ( b.start_ymd LIKE DATE_FORMAT(NOW()+0,'%Y-%m-%d')
+					or b.end_ymd LIKE date_format(NOW()+0,'%Y-%m-%d') )
+				AND b.user_idx ='${idx}'
+					
+				ORDER BY order_no,start_ymd,end_ymd desc,kor_nm
+	</select>
+	
+	 <select id="getTeamList" resultType="hashmap">
+		SELECT * FROM team WHERE team_kr !='HQ' ORDER BY idx 
+	</select>
+	
+	 <select id="getLevelList" resultType="hashmap">
+		SELECT * FROM level WHERE idx !=1 ORDER BY idx 
+	</select>
+	
+	<select id="idCheck" parameterType="hashmap" resultType="hashmap">
+		select * from user where id='${join_id}'
+	</select>
+
+	<select id="mailCheck" parameterType="hashmap" resultType="hashmap">
+		select * from user where email='${mail}'
+	</select>
+	
+	<select id="phoneCheck" parameterType="hashmap" resultType="hashmap">
+		select 
+			count(*) as cnt 
+		from user where 
+			phone_no1='${phone_no1}'
+			and phone_no2='${phone_no2}'
+			and phone_no3='${phone_no3}'
+	</select>
+	
+	
+	<insert id="insUser" parameterType="hashmap">
+    	insert into user
+    	(
+    		idx,
+    		id, 		pw, 		name, 
+    		email,		phone_no1, 	phone_no2, 
+    		phone_no3,	team, 		level,
+    		regi_date,	submit_date,
+    		sale_auth,	chmod
+    	)
+    	values
+    	(
+    		(select idx from (SELECT LPAD(MAX(idx)+1,3,0) AS idx FROM user) as temp),
+    		#{join_id}, 								#{join_pw}, 			#{join_name}, 
+    		#{join_email}, 								#{join_phone1}, 		#{join_phone2},
+    		#{join_phone3}, 							#{join_team},			#{join_level}, 	
+    		#{join_sign_date},						    now()+0,
+    		#{sale_auth},								'5'
+    	)
+    	
+    	
+	</insert>
+	
+	<select id="get	List" resultType="hashmap">
+		SELECT 
+			GROUP_CONCAT(AA.NAME SEPARATOR '|') AS name,
+			GROUP_CONCAT(AA.idx SEPARATOR '|') AS idx,
+			GROUP_CONCAT( (select name FROM chmod where idx = AA.chmod) SEPARATOR '|' ) AS chmod
+		FROM user AA  WHERE 1
+			and AA.chmod = 1 || AA.chmod = 2 || AA.chmod = 3
+			and AA.use_yn='Y'
+		ORDER BY chmod desc
+	</select>
+	
+	<select id="getMyInfo" resultType="hashmap">
+		SELECT 
+			aa.*,
+			bb.team_kr AS team_nm,
+			cc.NAME AS level_nm,
+			dd.NAME AS chmod_nm
+		from user aa, team bb, level cc, chmod dd WHERE
+			bb.idx = aa.team
+			AND cc.idx = aa.level
+			AND dd.idx = aa.chmod
+			AND aa.idx = '${myidx}'
+	</select>
+	
+	<select id="getMyTeam" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			*, 
+			(SELECT NAME FROM level WHERE level.idx = user.`level`) AS level_nm 
+		FROM user WHERE 
+			team = '${myteam}' 
+			AND idx !='${myidx}'
+			and use_yn='Y'
+			ORDER BY level
+	</select>
+	
+
+	<update id="uptMyInfo" parameterType="hashmap">
+		update user set 
+		<if test="!pw.equals('')">
+		    pw ='${pw}',
+		</if>
+		    email ='${email}',
+		    name ='${name}',
+			phone_no1 ='${phone1}',
+			phone_no2 ='${phone2}',
+			phone_no3 ='${phone3}',		
+		    team ='${team}',
+		    level='${level}',
+		    regi_date ='${sign_date}',
+		    line_storage_1 ='${line_value1}',
+		    line_storage_2 ='${line_value2}',
+		    line_storage_3 ='${line_value3}',
+		    user_color = '${mycolor}'
+		where 
+			idx =#{myidx} 
+	</update>
+	
+	<!-- 가족구성원 팀 조회 -->
+	<select id="getGroupTeamList" parameterType="hashmap" resultType="hashmap">
+		SELECT DISTINCT 
+		(SELECT team_kr FROM team WHERE idx = a.team) AS team
+		FROM user a WHERE a.team != 1 AND a.use_yn = 'Y'
+		ORDER BY FIELD(team, 8, 9, 7, 2, 6, 5, 3) desc
+	</select>
+	
+	<!-- 가족구성원 팀원,직급 조회 -->
+	<select id="getGroupPeopleList" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			DISTINCT 
+			(SELECT team_kr FROM team WHERE idx = a.team) AS team, 
+			(SELECT name from level where idx = a.level) AS level, NAME
+		FROM user a WHERE 
+			a.team != 1 
+			AND use_yn = 'Y' 
+			ORDER BY FIELD(team, 2, 7, 4, 6, 5, 3), 
+			a.LEVEL,
+			a.chmod,
+			a.regi_date
+	</select>
+	
+	<select id="userInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			(SELECT NAME FROM chmod WHERE idx = aa.chmod) AS chmod_nm,
+			(SELECT team_kr FROM team WHERE idx = aa.team) AS team_nm,
+			aa.*
+		FROM user aa WHERE
+			aa.idx='${idx}'
+	</select>
+	
+	<select id="getNewUserInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			*
+		FROM user  WHERE
+			id = '${login_id}'
+	</select>
+	
+	<insert id="insNewUserToLeave" parameterType="hashmap">
+		insert into annual_leave_user
+			(leave_idx,	user_idx,	leave_cnt,	submit_date)
+		values
+			( (SELECT idx FROM annual_leave_master WHERE target_year = DATE_FORMAT(NOW(),'%Y')),  '${new_user_idx}','0',now()+0 )
+	</insert>
+	
+	<select id="getLeaderList" resultType="hashmap">
+		SELECT 
+			GROUP_CONCAT(AA.NAME SEPARATOR '|') AS name,
+			GROUP_CONCAT(AA.idx SEPARATOR '|') AS idx,
+			GROUP_CONCAT( (select name FROM chmod where idx = AA.chmod) SEPARATOR '|' ) AS chmod
+		FROM user AA  WHERE 1
+			and (
+				AA.chmod = 1 || 
+				AA.chmod = 2 || 
+				AA.chmod = 3 ||
+				(AA.team = 2 AND AA.chmod='4')
+				)
+			AND AA.use_yn='Y'
+		ORDER BY chmod desc
+	</select>
+	
+	<insert id="insTeamChart" parameterType="hashmap">
+		INSERT into team_chart
+			(
+				chart_file, chart_file_ori, submit_date
+			)
+			VALUES
+			(
+				'${chart_file}', '${chart_file_ori}', now()+0
+			)
+	</insert>
+	
+	<select id="selectNew" parameterType="hashmap" resultType="hashmap">
+		SELECT * FROM team_chart ORDER BY SUBMIT_DATE DESC LIMIT 1
+	</select>
+	
+</mapper>

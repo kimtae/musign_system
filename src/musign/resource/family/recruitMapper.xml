@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/recruitMapper">
+	<select id="getRecruitCount" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			count(*) as CNT
+		FROM rec_info aa
+	</select>
+	
+	<select id="getRecruitList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			idx,
+			DATE_FORMAT(submit_date,'%Y-%m-%d') AS submit_date,
+			aa.user_name,
+			replace(replace(replace(replace(replace(replace(replace(replace(aa.want_area,'|',',')
+			,'01','운영지원'),'02','기획'),'03','디자인'),'04','패키지디자인'),'05','프론트엔드'),'06','백엔드'),'07','마케팅') AS want_area_nm,
+			aa.user_phone,
+			aa.user_email,
+			aa.user_address ,
+			aa.story_cont
+		FROM rec_info aa
+		<if test="!order_by.equals('') and !sort_type.equals('')">
+			order by ${sort_type} ${order_by}
+		</if>
+		
+		<if test="order_by=='' and sort_type==''">
+			order by submit_date desc
+		</if>
+			
+		limit ${s_rownum}, ${e_rownum}
+	</select>
+	
+	<select id="getRecinfo" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			*
+		FROM rec_info WHERE 
+			idx ='${rec_idx}'
+	</select>
+	
+	<select id="getRecruitArea" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			*
+		FROM rec_area
+			order by idx
+	</select>
+	
+	<update id="uptRecArea" parameterType="hashmap">		
+        update rec_area set
+ 			use_yn = '${chk_val}'
+		where 
+			idx = '${idx}'
+	</update>
+</mapper>

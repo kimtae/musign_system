@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/operMapper">
+	<!-- 카드 목록 조회  및 검색 -->
+	<select id="getCardList" parameterType="hashmap" resultType="hashmap">
+			SELECT *, 
+				date_format(submit_date, '%Y-%m-%d %H:%i') as submit_date 
+			FROM pay_method
+				where pre_pay_yn = 'Y'	
+			<!-- 은행 검색 -->
+			<if test="!search_cont.equals('')">
+				and bank LIKE '%${search_cont}%' 
+			</if>
+			<!-- 사용팀 검새 -->
+			<if test="!search_cont.equals('')">
+				or owner LIKE '%${search_cont}%' 
+			</if>
+			<!-- 카드번호 검색 -->
+			<if test="!search_cont.equals('')">
+				or account_num LIKE '%${search_cont}%' 
+			</if>	
+	</select>
+	
+	<!-- 카드 단일 조회-->
+	<select id="getCardOne" parameterType="hashmap" resultType="hashmap">
+			SELECT *, 
+				date_format(submit_date, '%Y-%m-%d %H:%i') as submit_date 
+			FROM pay_method
+				where idx = '${idx}'
+	</select>
+	
+	<!-- 카드 등록 -->
+	<insert id="insCard" parameterType="hashmap">
+			INSERT into pay_method
+			(
+				method,			bank,
+				pre_pay_yn,		account_num,		
+				owner,			submit_date	  
+			)
+				VALUES
+			(
+				'${method}',		'${bank}',	
+				'${pre_pay_yn}',	'${account_num}',	
+				'${owner}',			now()+0
+			)
+	</insert>
+	
+	<!-- 카드 등록 눌렀을 시  팀원 조회 -->
+	<select id="getTeamList" resultType="hashmap">
+			SELECT * FROM team WHERE team_kr !='HQ' ORDER BY idx 
+	</select>
+	
+	<!-- 카드 수정 -->
+	<update id="upCard" parameterType="hashmap">
+			UPDATE pay_method set
+				method = '${method}',
+				bank = '${bank}',
+				pre_pay_yn = '${pre_pay_yn}',
+				account_num = '${account_num}',
+				owner = '${owner}'
+			where
+				idx = '${idx}'
+	</update>
+	
+	<!-- 카드 삭제 -->
+	<delete id="delCard" parameterType="hashmap">
+			DELETE from pay_method where idx = '${idx}'
+	</delete>
+</mapper>

@@ -1,0 +1,528 @@
+@import 'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900';
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+*{
+	font-family: 'Roboto','Noto Sans KR', sans-serif;
+	font-size:14px;
+	color:#666;
+	letter-spacing:-0.5px;
+	line-height:1.6;
+	padding:0;
+	margin:0;
+	box-sizing:border-box;
+}
+a, a:hover, a:focus{
+	text-decoration:none;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+}
+table{
+	 border-collapse: collapse;
+}
+span, em, strong{
+	font-size:100%;
+	color:inherit;
+}
+.en-txt{
+	font-family: 'Roboto', sans-serif;
+	letter-spacing:0;
+}
+.ko-txt{
+	font-family: 'Noto Sans KR', sans-serif;
+}
+
+.page_login{
+	margin:300px auto;
+	text-align:Center;
+	max-width:500px;
+}
+.logo-wr{
+	display:block;
+	margin:0 auto 30px;
+}
+#jumal select{
+	margin-top:5px;
+}
+#large td{
+	padding-top:20px;
+	padding-bottom:20px;
+}
+#large .large-td {
+	padding-left:23px;
+}
+input, select{
+	padding:10px;
+	border:1px solid #e0e0e0;
+	display:inline-block;
+	/* height:44px; */
+}
+.sec1 input{
+	margin-bottom:5px;
+}
+.page_login input{
+	width:100%;
+	margin-bottom:10px;
+}
+.btn01{
+	background:#333;
+	color:#fff;
+	border:1px solid #333;
+}
+.btn{
+	letter-spacing:0;
+	cursor:pointer;
+	height:45px;
+}
+.chk-wrap{
+	text-align:left;
+	margin-bottom:30px;
+}
+.chkbox input[type="checkbox"] {
+	display:none;
+}
+label:before{
+	display:inline-block;
+	width:20px;
+	height:20px;
+	content:"";
+	border:1px solid #333;
+	vertical-align:middle;
+	margin-right:10px;
+}
+.chkbox input[type="checkbox"]:checked + label:before {
+    background:#333;
+}
+#header{
+	padding:15px 30px;
+	border-bottom:1px solid #e0e0e0;
+	display:TAble;
+	width:100%;
+	table-layout:fixed;
+}
+#header > div{
+	display:Table-cell;
+	vertical-align:middle;
+}
+#inb{
+	background:#fff;
+	width:300px;
+	float:left;
+	height:100%;
+	padding:0;
+	border-right:1px solid #e0e0e0;
+}
+#inb > div a{
+	padding:15px 30px;
+	display:block;
+	border-bottom:1px solid #e0e0e0;
+	font-size:16px;
+}
+#inb > div > a{
+
+}
+.fl-ri{
+	text-align:right;
+}
+.s-btn{
+	bordeR:1px solid #333;
+	display:inline-block;
+	padding:5px 10px;
+}
+.fl-ri a{
+	margin-left:15px;
+}
+#inb .depth1.active{
+	background:#333;
+}
+#inb .depth1.active > a{
+	color:#fff;	
+}
+#inb .dep1_menu.active{
+
+}
+.depth2.active{
+	display:block !important;
+}
+.depth2{
+	background:#f5f5f5;
+}
+#container{
+	padding:50px 50px 50px 350px;
+}
+#footer{
+	position:fixed;
+	bottom:0;
+	left:0;
+	width:100%;
+	text-align:Center;
+	background:#f5f5f5;
+	padding:5px 30px;
+	font-size:11px;
+}
+.board-top {
+	padding:20px 50px 20px 350px;
+}
+.board-list-btn{
+	margin:5px 0 20px 0;
+}
+.main-tit{
+	font-size:20px;
+	margin-bottom:20px;
+}
+.board-tit{
+	color:#999;
+	text-align:left;
+}
+h3{
+	color:#333;
+	font-size:18px;
+}
+.board-lay > div {
+	padding:15px 0;
+	border-bottom:1px solid #e0e0e0;
+}
+.board-lay .slide{
+	padding:15px;
+}
+.board-lay .slide div{
+	word-break: break-word;
+}
+.board-tit{
+	color:#333;
+	display:block;
+	font-weight:500;
+}
+#cke_board_cont {
+	margin-top:10px;
+}
+#board_title{
+	line-height:1.4;
+}
+#choose_board_type{
+    vertical-align: bottom;	
+}
+.board-stit{
+	font-size:13px;
+}
+.board-lay{
+	border-top:2px solid #333;
+	margin-top:15px;
+	width:100%;
+}
+.dash-wr > div{
+	width:48%;
+	float:left;
+}
+.dash-wr > div + div{
+	margin-left:4%;
+}
+.board-lay td, .board-lay th{
+	padding:10px;
+	border-bottom:1px solid #e0e0e0;
+	text-align:center;
+	background:#fff;
+}
+.cap-p{
+	font-size:13px;
+
+	padding:5px 0;
+}
+.dash-wr, .table{
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+	border:none;
+}
+.search-wr{
+	border:1px solid #e0e0e0;
+	padding:30px;
+	background:#fafafa;
+}
+.table > div{
+	display:Table-cell;
+	vertical-align:middle;
+}
+.search-wr > div{
+	vertical-align:top;
+}
+.search-wr .table div{
+	padding:0 5px;
+}
+.wid-2{
+	width:20%;
+}
+.wid-3{
+	width:30%;
+}
+
+.wid-4{
+	width:40%;
+}
+.wid-7 .table{
+	padding:0 !important;
+	width:42.5%;
+}
+.wid-10, .search-wr input, .search-wr select{
+	width:100%;
+}
+.mid-da select, .mid-da input{
+	width:100%;
+/* 	margin:0 0.6%; */
+	vertical-align:top;
+}
+.mid-da {
+	width:45%;
+	font-size:0;
+	padding:0 !important;
+}
+.search-wr input, .search-wr select{
+	height:45px;
+}
+.mid-s{
+	width:10%;
+	text-align:center;
+}
+.search-wr .table + .table{
+	margin-top:5px;
+}
+.musign-grid{
+	max-width:1200px;
+	margin: 0 auto;
+}
+.file_wrap input{
+	vertical-align:top;
+}
+.file_wrap .btn{
+	margin-left:5px;
+	width:100px;
+}
+.sign-img{
+	margin-top:15px;
+	border:1px solid #e0e0e0;
+	display:inline-block;
+}
+.board-lay th{
+	color:#000;
+	font-weight:500;
+}
+.user_edit table td {
+	text-align: left;
+}
+.user_edit table td input, .user_edit table td select {
+	width: 200px;
+}
+
+.btn {
+	color: #fff;
+    min-width: 80px;
+}
+.btn_black01 {
+	background: #333;
+}
+.btn_black02 {
+	background: #e0e0e0;
+	color: #000;
+}
+.ali-right {
+	text-align: right;
+}
+.ali-center {
+	text-align: center !important;
+}
+.ali-left {
+	text-align: left !important;
+}
+.search-wrap {
+    text-align: center;
+    margin: 30 auto 0;
+    display: table;
+}
+.search-wrap select, .search-wrap input {
+	vertical-align: top;
+	height: 44px;
+}
+.search-wrap select + input {
+	margin-left: 15px;
+}
+.allow-wrap table td {
+	text-align: left;
+}
+.allow-wrap table tr {
+	height: 65px;
+}
+.allow-wrap .btn-wrap {
+	margin: 30px 0 0;	
+}
+.allow-wrap .btn-wrap input {
+	margin: 0;
+}
+td #target_detail div {
+/* 	display: table;
+	vertical-align: top; */
+}
+.allow-wrap input {
+	margin-right: 15px;
+}
+.allow-wrap select {
+	margin-right: 15px;
+}
+textarea {
+	width: 100%;
+	height: 200px;
+}
+input[type="file"] {
+
+}
+.btn-add, .btn-del {
+	width: 44px;
+	height: 44px;
+	background: #fff;
+	border: 1px solid #333;
+	font-size: 0;
+	line-height: 44px;
+	padding: 0;
+    vertical-align: 4px;
+}
+.btn-add {
+	background: url('/img/btn-add.png') no-repeat center;
+	background-size: 15px;
+}
+.btn-del {
+	background: url('/img/btn-del.png') no-repeat center;
+	background-size: 15px;
+}
+.period-cont {
+	margin: 0 10px;
+}
+
+/*---------------------approval_doc_edit.php css---------------------------------------------------------*/
+.allow {display:none;}
+.guntaeInput{
+    background:none;
+    border:none;
+}
+.timeinput{
+    width:50px;
+}
+.board-lay02{
+	margin-top:0;
+	border-top:0;
+	border-bottom:0;
+	width:100%;
+}
+.addrow-wr{
+	padding:0 !important;	
+	border-bottom:0 !important;
+}
+.board-lay02 th{
+	width:170px;
+}
+.board-lay02 td{
+	width:300px;
+}
+.board-lay02 td.btnwr{
+	text-align:right !important;
+	width:80px;
+}
+input[type="file"]{
+    vertical-align:bottom;
+    height:44px;
+}
+
+/* 전체배경 */
+.attach_div {
+	width:100%; 
+	height:100%;  
+	position:fixed;
+	top:0;
+	left:0;
+	background:rgba(0,0,0,0.7);
+	background:#d9d9d9;	
+}
+
+.attach_div.click {
+	top:0;
+	left:0;
+	transition:all 0.3s;	
+}
+
+/* 테이블 wrap */
+
+.attach_div .tableWrap {
+	display:table;
+	width:1200px;
+	margin:0 auto;
+	border-top: 2px solid #333;
+}
+.attach_div .tableWrap .tableBox {
+	 display: table-cell;
+	 vertical-align:middle; 
+	 text-align:center;
+	 
+}
+
+.attach_div .tableWrap .tableBox .table tr {
+	border-left:none;
+	border-right:none;
+}
+
+.attach_div .tableWrap .tableBox .table tr td {
+	text-align:center;
+}
+
+.attach_div .tableWrap .tableBox .Number { /* 1.테이블 숫자 */
+	width:10%;
+}
+
+.attach_div .tableWrap .tableBox .Payment { /*  2.결제번호 */
+	width:20%;
+}
+
+.attach_div .tableWrap .tableBox .Content  { /* 3.내용 */
+	width:20%;
+}
+
+/* 4.선택버튼 */
+.attach_div .tableWrap .tableBox .SelBtn { 
+	width:5%;
+}
+
+.attach_div .tableWrap .tableBox .SelBtn input {
+	width:100%;
+	background:#eff0f4;
+}
+
+
+/* 닫기버튼 */
+/* .attach_div .attachClose {
+	position:absolute;
+	top:0;
+	right:15%;
+	cursor:pointer;
+} */
+.attach_div .attachClose {
+	
+}
+.give_back_div02{
+	width: 800px;
+	margin: 50px auto;
+}
+.give_back_div02 h3{
+	font-size:15px;
+}
+.give-btn{
+	text-align:right;
+	margin-top:10px;
+}
+.text-left{
+	text-align:left !important;
+}
+.allow-wrap table td span:first-child{
+	margin-right:20px;
+}
+
+
+
+@media screen and (max-width:768px) {}

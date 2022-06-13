@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/roomMapper">
+	 <select id="getRoomOne" parameterType="hashmap" resultType="hashmap">
+		select * from room where idx = '${idx}'
+	</select>
+	 <select id="getRoom" parameterType="hashmap" resultType="hashmap">
+		select * from room where room_nm = '${room_nm}'
+		and
+		(
+			(
+				concat(start_date, '00') <![CDATA[<=]]> '${start_date}' and concat(end_date, '00') <![CDATA[>=]]> '${start_date}'
+			)
+			or
+			(
+				concat(start_date, '00') <![CDATA[<=]]> '${end_date}' and concat(end_date, '00') <![CDATA[>=]]> '${end_date}'
+			)
+			or
+			(
+				concat(start_date, '00') <![CDATA[>=]]> '${start_date}' and concat(end_date, '00') <![CDATA[<=]]> '${end_date}'
+			)
+		)
+		and idx != '${idx}'
+	</select>
+	 <select id="getRoomList" parameterType="hashmap" resultType="hashmap">
+		select *, (select name from user where idx = room.user_idx) as submit_user 
+		from 
+		room 
+		where 1
+		and room_nm = '${room_nm}' 
+		and start_date <![CDATA[>=]]> concat(substr(now()+0, 1, 8), '0000')
+		order by start_date
+	</select>
+	<insert id="insRoom" parameterType="hashmap">
+		insert into room
+		set
+		user_idx		= '${user_idx}',
+		room_nm			= '${room_nm}',
+		member			= '${member}',
+		start_date		= '${start_date}',
+		end_date	 	= '${end_date}',
+		`usage`	 		= '${usage}',
+		submit_date	 	= now()+0
+	</insert>
+	<update id="upRoom" parameterType="hashmap">
+		update room
+		set
+		room_nm			= '${room_nm}',
+		member			= '${member}',
+		start_date		= '${start_date}',
+		end_date	 	= '${end_date}',
+		`usage`	 		= '${usage}'
+		where
+		idx = '${idx}'
+	</update>
+	<delete id="delRoom" parameterType="hashmap">
+		delete from room where idx = '${idx}'
+	</delete>
+</mapper>

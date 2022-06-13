@@ -1,0 +1,354 @@
+@charset "utf-8";
+/* *** 헤더 및 푸터, LNB, 컨텐츠 영역 정의 파일 *** */
+
+/* *** 전체 구조 *** */
+#container {
+    overflow: hidden;
+    height: auto;
+    background: #fff;
+    border: none;
+	max-width:1600px;
+	width: calc(100% - 300px);
+	float:right;
+	padding:50px;
+	margin-top:113px;
+}
+#container.main_contain{
+	padding:50px 100px 100px;
+}
+
+/* *** 헤더 *** */
+#header{
+	padding: 20px 30px;
+	border-bottom:1px solid #e0e0e0;
+	display:TAble;
+	width:100%;
+	position:fixed;
+	background-color:#fff;
+	z-index:100;
+}
+#header > div{
+	display:Table-cell;
+	vertical-align:middle;
+}
+#header>div:nth-child(2){
+	float:right;
+	display:flex;
+	align-items:center;
+}
+#header .logo {
+	font-size: 20px;
+    font-weight: bold;
+    position:absolute;
+    top:39%;
+    left:3%;
+}
+#header .main_time {
+}
+#header .main_time dl{
+	display:flex;
+	text-align:left;
+}
+#header .main_time dt{
+	width:65px;
+	font-weight:500;
+}
+#header .m_btn{
+	display:none;
+	position:absolute;
+	top:50%;
+	left:30px;
+	-webkit-transform:translateY(-50%);
+	-moz-transform:translateY(-50%);
+	-o-transform:translateY(-50%);
+	-ms-transform:translateY(-50%);
+	transform:translateY(-50%);
+	min-width:0;
+}
+.mu_mypage{
+	float:right;
+    margin: 0 40px 0 0;
+}
+.mu_mypage a{
+	display:inline-block;
+}
+.mu_myIcon{
+	background:url("/img/Profile.png") left no-repeat;
+	background-size:15px;
+	padding-left:24px;
+	font-size:16px;
+	margin-right:24px;
+}
+.mu_myIcon2{
+	background:url("/img/top_Logout.png") left no-repeat;
+	background-size:14px;
+	padding-left:22px;
+	font-size:16px;
+}
+.pc_mydata{
+    margin: 0 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.today_status{
+    display: inline-block;
+    vertical-align: middle;
+    padding: 2px 15px;
+    border-radius: 20px;
+}
+/* 모바일 버튼 */
+#header button.m_btn{
+	max-width: 25px !important;
+	border:none;
+	text-align:left;
+}
+#header .m_btn img{
+	width:25px;
+}
+/* 버거 메뉴 */
+#m_header{
+	position:fixed;
+	width:100%;
+	height:100%;
+	/*background-color:rgba(0,0,0,.65);*/
+	left:-100%;
+	top:0;
+	z-index:10;
+}
+#m_header .inner{
+	width:100%;
+	height:100%;
+	background-color:#fff;
+	position:relative;
+}
+#m_header .m_close{
+	position:absolute;
+	right: 20px;
+    top: 10px;
+	background:none;
+	border:none;
+	text-align:right;
+	display: none;
+}
+#m_header .m_close img{
+	width: 15px;
+}
+#m_header .top{
+	border-bottom:1px solid #efefef;
+	padding:20px;
+	text-align:center;
+	margin-top: 80px;
+}
+#m_header .top .logo img{
+	width:130px;
+}
+#m_header .top .logo,
+#m_header .top .logo + span{
+	display:block;
+	margin-bottom:10px;
+}
+#m_header #header{
+	padding:20px;
+
+}
+#m_header #header > div{
+	display:block;
+	text-align:center;
+}
+#m_header #header .fl-ri span{
+	display:block;
+	text-align:center;
+	margin-bottom:10px;
+}
+#m_header #header .fl-ri{
+	text-align:center;
+}
+#m_header .s-btn{
+	margin:0 3px;
+}
+
+#m_header #inb{
+	width:100%;
+	height:calc(100% - 148px);
+	overflow:auto;
+	border-right:none;
+	text-align:left;
+}
+#m_header #inb > div a{
+	padding:10px 20px;
+	font-size:14px;
+}
+#m_header .mu_mypage {
+	display: inline-block;
+    float: none;
+    margin-top: 10px;
+}
+
+#m_header .mu_mypage > .mu_mypage.notice_icon {
+	margin-top: 0;
+    bottom: -5px;
+}
+
+/* *** LNB *** */
+#inb{
+	background:#f1efef;
+	width:300px;
+	float:left;
+	padding:0;
+	position:fixed;
+	top:0;
+	margin-top:108px;
+	text-align:center;
+	height: calc(100vh - 113px);
+    overflow-y: auto;
+    z-index: 1;
+}
+#inb > div a{
+	padding:20px 30px;
+	display:block;
+	font-size:16px;
+	color:#666;
+	border-bottom:1px solid rgba(102,102,102,0.2);
+}
+.depth1{
+	text-align:center;
+	/*border-bottom:1px solid rgba(102,102,102,0.2);*/
+	/*background:url(/img/Compose.png) no-repeat 30% center;*/
+}
+#inb .depth1.active{
+	background:#000;
+}
+#inb .access {
+	position:relative;
+}
+#inb .access .area {
+	position:absolute;
+	top:50%;
+	transform:translate(-50%, -50%);
+	right:12px;
+	width:25px;
+	height:25px;
+	border-radius:30px;
+	font-size:14px;
+	text-align:center;
+	color: #ff0000;
+	font-family: 'Roboto','Noto Sans KR', sans-serif;
+	/* border:2px solid #ff0000; */
+	/* background:#fff; */
+}
+#inb .access .number {
+	cursor:pointer;
+}
+#inb .depth1.active > a{
+	color:#fff;	
+}
+.depth2{
+	background:#fafafa;
+}
+
+.depth2.active, .depth2.active ul.active{
+	display:block !important;
+	padding-bottom:7px;
+}
+.depth3.lnb-menu a{
+	padding: 5px 0 3px !important;
+	/* border-bottom:1px solid rgba(102,102,102,0.1) !important; */
+}
+.dep3_menu.n1.n2{
+	display: block;
+    font-size: 16px;
+    color: #666;
+}
+.depth3.depth4.lnb-menu li a{
+	padding: 3px 5px !important;
+	border-bottom:none !important;
+}
+.depth3.lnb-menu a div{
+	padding-left:105px;
+}
+.depth3.lnb-menu a div p.depth4_wrap{
+	font-size:12.5px;
+	color:rgba(51,51,51,0.6);
+	/* padding-left:115px; */
+}
+.dep3_name{
+	font-size:15px !important;
+	color: #565656 !important;
+	/* border-bottom:1px solid rgba(102,102,102,0.2) !important; */
+	/* border-top:1px solid rgba(102,102,102,0.2) !important; */
+}
+.dosign_num{
+	display:flex;
+	justify-content: center;
+	position:relative;
+	border-bottom:
+}
+.dosign_num .sign_number{
+	color:red;
+	margin-left: 5px;
+	position:absolute;
+	right: 135px;
+    top: 9px;
+}
+
+.dosign_num .sale_number{
+	color:red;
+	margin-left: 5px;
+	position:absolute;
+	right: 135px;
+    top: 9px;
+}
+
+#inb > div a{
+	padding:10px 30px;
+	padding-left:80px;
+}
+#inb .depth2 a{
+	padding:6px;
+	border-bottom:none;
+	padding-left:95px;
+}
+.depth1{
+	text-align:left;
+	background: url(/img/lnb_down.png) no-repeat 80% 20px;
+	background-size: 9px;
+	cursor:pointer;
+}
+.depth1.on{
+	background: url(/img/lnb_up.png) no-repeat 80% 20px;
+	background-size: 9px;
+}
+
+.depth_pad{
+	padding-left:105px;
+}
+.depth3.lnb-menu{
+	padding-bottom:5px;
+}
+.depth3.lnb-menu a div .depth4_wrap{
+	margin-left: 7px;
+}
+.dep1_menu .sign_number{
+	color:red;
+	    margin-left: 7px;
+}
+
+.dep1_menu .sale_number{
+	color:red;
+	    margin-left: 7px;
+}
+
+
+
+/* *** 푸터 *** */
+#footer{
+	position:fixed;
+	bottom:0;
+	left:0;
+	width:100%;
+	text-align:Center;
+	background:#f5f5f5;
+	padding:5px 30px;
+	font-size:11px;
+}

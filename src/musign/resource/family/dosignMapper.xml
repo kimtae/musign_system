@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/dosignMapper">
+	<select id="getDosignListCount" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			count(*) as CNT
+		FROM approval_line aa, user bb,team cc, level dd, doc_list ee, chmod ff WHERE
+			aa.user_idx = bb.idx
+			AND aa.isDel ='N'
+			AND cc.idx = bb.team
+			AND dd.idx = bb.chmod
+			AND ee.doc_num = aa.doc_type
+			AND ff.idx = bb.chmod
+
+			AND (aa.user_idx = '${myidx}'	  
+				 or aa.approval_wait = '${myidx}'  
+				 or approval_chk LIKE '%${myidx}%'
+				 or(aa.approval_wait ='' and '${isManager}'='Y')) 
+				 
+				 
+			<if test="use_yn != 'Y'.toString()">
+				and bb.use_yn='Y'
+			</if>
+			
+			<if test="!imsi_yn.equals('')">
+				AND aa.imsi_yn ='${imsi_yn}'
+			</if>	
+				 
+			<if test="!search_name.equals('')">
+				AND bb.NAME LIKE '%${search_name}%'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				AND aa.submit_date <![CDATA[>=]]> concat(REPLACE('${start_ymd}','-',''),'000000')
+			</if>
+			
+			<if test="!end_ymd.equals('')">
+				AND aa.submit_date <![CDATA[<=]]> concat(REPLACE('${end_ymd}','-',''),'000000')
+			</if>
+			
+			<if test="!doc_type_search.equals('')">
+				AND aa.doc_type = '${doc_type_search}'
+			</if>
+			
+			<if test="!content_search.equals('')">
+				AND 
+					case when aa.doc_type ='100' 
+					then (SELECT cont FROM doc_guntae WHERE idx=aa.doc_idx) 
+					 when aa.doc_type ='101' 
+					then (SELECT cont FROM doc_jicul WHERE idx=aa.doc_idx) 
+					 when aa.doc_type ='102' 
+					then (SELECT cont FROM doc_jumal WHERE idx=aa.doc_idx) 
+					 when aa.doc_type ='103' 
+					then (SELECT cont FROM doc_yeonjang WHERE idx=aa.doc_idx) 
+					 when aa.doc_type ='104' 
+					then (SELECT cont FROM doc_roundrobin WHERE idx=aa.doc_idx) 
+					 when aa.doc_type ='105' 
+					then (SELECT cont FROM doc_prize WHERE idx=aa.doc_idx) 
+				END  LIKE '%${content_search}%'
+			</if>
+			
+			<if test="!step_search.equals('')">
+				AND aa.step='${step_search}'	 
+			</if>
+			
+	</select>
+
+	<select id="getDosignList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			aa.*,
+			bb.NAME as kor_nm,
+			cc.team_kr,
+			dd.NAME as level_nm,
+			ee.doc_name
+		FROM approval_line aa, user bb,team cc, level dd, doc_list ee, chmod ff WHERE
+			aa.user_idx = bb.idx
+			AND aa.isDel ='N'
+			AND cc.idx = bb.team
+			AND dd.idx = bb.level
+			AND ee.doc_num = aa.doc_type
+			AND ff.idx = bb.chmod
+			
+			AND (aa.user_idx = '${myidx}'	  
+				 or aa.ref_line like '%${myidx}%'
+				 or aa.approval_wait = '${myidx}'  
+				 or approval_chk LIKE '%${myidx}%'
+				 or(aa.approval_wait ='' and '${isManager}'='Y')) 
+				 
+			<if test="use_yn != 'Y'.toString()">
+				and bb.use_yn='Y'
+			</if>
+			
+			<if test="!imsi_yn.equals('')">
+				AND aa.imsi_yn ='${imsi_yn}'
+			</if>	 
+						
+			<if test="!search_name.equals('')">
+				AND bb.NAME LIKE '%${search_name}%'
+			</if>
+			
+			<if test="!start_ymd.equals('')">
+				AND aa.submit_date <![CDATA[>=]]> concat(REPLACE('${start_ymd}','-',''),'000000')
+			</if>
+			
+			<if test="!end_ymd.equals('')">
+				AND aa.submit_date <![CDATA[<=]]> concat(REPLACE('${end_ymd}','-',''),'000000')
+			</if>
+			
+			<if test="!doc_type_search.equals('')">
+				AND aa.doc_type = '${doc_type_search}'
+			</if>
+			
+			<if test="!content_search.equals('')">
+				AND 
+					case 
+						when aa.doc_type ='100' 
+					then (SELECT cont FROM doc_guntae WHERE idx=aa.doc_idx) 
+					 	when aa.doc_type ='101' 
+					then (SELECT cont FROM doc_jicul WHERE idx=aa.doc_idx) 
+					 	when aa.doc_type ='102' 
+					then (SELECT cont FROM doc_jumal WHERE idx=aa.doc_idx) 
+					 	when aa.doc_type ='103' 
+					then (SELECT cont FROM doc_yeonjang WHERE idx=aa.doc_idx) 
+					 	when aa.doc_type ='104' 
+					then (SELECT cont FROM doc_roundrobin WHERE idx=aa.doc_idx) 
+					 	when aa.doc_type ='105' 
+					then (SELECT cont FROM doc_prize WHERE idx=aa.doc_idx) 
+				END  
+					LIKE '%${content_search}%'
+			</if>
+			
+			<if test="!step_search.equals('')">
+				AND aa.step='${step_search}'	 
+			</if>
+				 
+			order by aa.idx desc
+			limit ${s_rownum}, ${e_rownum}
+	</select>
+	
+	<select id="getApprovalLine" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			(select name from user where idx=aa.user_idx) as kor_nm,
+			aa.* 
+		FROM approval_line aa WHERE
+			aa.idx = '${idx}'
+			AND (aa.approval_wait = '${myidx}' or aa.user_idx = '${myidx}' or aa.approval_chk like '%${myidx}%'
+				or '${isManager}' ='Y')
+	
+	</select>
+	
+	<select id="getDocInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			* 
+		FROM ${doc_nm} WHERE
+			doc_type ='${doc_type}'
+			and idx ='${doc_idx}'
+	</select>
+	
+	<select id="getChmod" parameterType="String" resultType="String">
+		SELECT NAME FROM chmod WHERE idx = (SELECT chmod FROM user WHERE idx='${useridx}')
+	
+	</select>
+	
+	<select id="chkManager" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			bb.team_kr,
+			cc.NAME AS chmod_nm
+		FROM user aa, team bb, chmod cc WHERE 
+			aa.idx='${myidx}'
+			AND aa.team = bb.idx 
+			AND aa.chmod = cc.idx
+	</select>
+	
+	<update id="doApprove" parameterType="hashmap">
+		update approval_line set 
+		    step ='${step}',
+		    approval_wait ='${waiter}',
+		    approval_chk ='${approval_chk}',
+		    approval_date ='${approval_date}',
+		    approval_content ='${approval_content}'
+		where 
+			idx ='${idx}'
+	</update>
+	
+	<update id="doReturn" parameterType="hashmap">
+		update approval_line set 
+		    step ='반려',
+		    return_idx ='${myidx}',
+		    return_why ='${content}',
+		    return_date = now()+0
+		where 
+			idx ='${idx}'
+	</update>
+	
+	<update id="doFinalPass" parameterType="hashmap">
+		update approval_line set 
+		    step ='결재',
+		    approval_final ='${myidx}',
+		    final_date = now()+0
+		where 
+			idx ='${idx}'
+	</update>
+	
+	<select id="getPayMethodNm" parameterType="String" resultType="String">
+		SELECT method FROM pay_method WHERE idx = '${pay_method}'
+	</select>
+	
+	<select id="getPrevNextIdx" parameterType="hashmap" resultType="hashmap">
+		select
+		(SELECT
+			concat(aa.idx,'_',aa.doc_type)
+		FROM approval_line aa, user bb,team cc, level dd, doc_list ee, chmod ff WHERE
+			aa.user_idx = bb.idx
+			AND aa.isDel='N'
+			AND aa.imsi_yn='N'
+			AND cc.idx = bb.team
+			AND dd.idx = bb.chmod
+			AND ee.doc_num = aa.doc_type
+			AND ff.idx = bb.chmod
+			AND (aa.user_idx = '${myidx}'	  
+				 or aa.approval_wait = '${myidx}'  
+				 or approval_chk LIKE '%${myidx}%'
+				 or(aa.approval_wait ='' and '${isManager}'='Y')) 
+			AND aa.idx <![CDATA[<]]> '${idx}'
+			ORDER BY aa.idx desc LIMIT 1) AS prev_idx,
+			
+		(SELECT
+			concat(aa.idx,'_',aa.doc_type)
+		FROM approval_line aa, user bb,team cc, level dd, doc_list ee, chmod ff WHERE
+			aa.user_idx = bb.idx
+			AND aa.isDel='N'
+			AND aa.imsi_yn='N'
+			AND cc.idx = bb.team
+			AND dd.idx = bb.chmod
+			AND ee.doc_num = aa.doc_type
+			AND ff.idx = bb.chmod
+			AND (aa.user_idx = '${myidx}'	  
+				 or aa.approval_wait = '${myidx}'  
+				 or approval_chk LIKE '%${myidx}%'
+				 or(aa.approval_wait ='' and '${isManager}'='Y')) 
+			AND aa.idx <![CDATA[>]]> '${idx}'
+			ORDER BY aa.idx asc LIMIT 1) AS next_idx
+	</select>
+	
+	
+	<select id="getWaterInfo" parameterType="hashmap" resultType="hashmap">
+		select
+			*
+		from user where
+			idx='${waiter_idx}'
+	</select>
+	
+</mapper>

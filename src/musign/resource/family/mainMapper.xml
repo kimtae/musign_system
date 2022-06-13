@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/mainMapper">
+
+	<!-- 게시판 조회 -->
+	<select id="main_getBoardList" parameterType="hashmap" resultType="hashmap">
+			SELECT		
+				board.idx,
+				board.board_type,
+				board.title,
+				board.cont,
+				board.visit,
+				date_format(board.submit_date, '%Y-%m-%d') AS submit_date, 
+				user.name, 
+				user.use_yn as user_use_yn
+			from board
+				join user
+				on board.user_idx = user.idx
+			where
+				board.use_yn ='Y'
+				
+			ORDER BY board.submit_date desc
+	</select>
+	
+	
+	<select id="getUserLeave" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			info AS leave_type,
+			day as start_ymd,
+			DAY AS end_ymd,
+			'1' AS date_diff,
+			'' AS kor_nm,
+			'11A355' AS user_color,
+			'' AS level_nm,
+			'1' AS order_no
+		FROM annual_holiday where
+			day like '%${cal_year}-${cal_mon}%'
+					
+	
+		<if test="leave_chk eq 'Y'.toString()">
+		UNION ALL 
+		
+			SELECT
+				b.leave_type,
+				b.start_ymd,
+				b.end_ymd,
+				DATEDIFF(b.end_ymd, b.start_ymd) AS date_diff,
+				c.NAME AS kor_nm,
+				c.user_color,
+				(SELECT NAME FROM level WHERE idx = c.`level`) AS level_nm,
+				'2' as order_no
+			FROM approval_line a, doc_guntae b, user c where
+				a.doc_type = b.doc_type
+				and c.use_yn='Y'
+				AND a.doc_idx = b.idx
+				AND c.idx = b.user_idx
+				AND a.step ='결재'
+				and a.isDel='N'
+				AND b.leave_type!= '연차취소' 
+				AND b.leave_type!= '반차취소'
+				AND b.idx NOT IN (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(attach_idx, '-', -2),'-',1) FROM doc_guntae WHERE user_idx=b.user_idx AND attach_idx !='') 
+				<!-- 임시조건  start -->
+				<!-- 
+				AND (DATE_FORMAT(b.start_ymd,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') or
+					DATE_FORMAT(b.start_ymd,'%Y-%m') = DATE_FORMAT( date_add(NOW(), INTERVAL 1 month),'%Y-%m'))
+					 -->
+				<!-- 임시조건  end -->
+				
+				<if test="!cal_year.equals('')">
+					and ( b.start_ymd like '%${cal_year}-${cal_mon}%'
+					or b.end_ymd like '%${cal_year}-${cal_mon}%' )
+				</if>
+				<!-- 
+				and (select count(*) from approval_line aa, doc_guntae bb where 
+						aa.doc_type=bb.doc_type and aa.doc_idx = bb.idx and aa.step='결재' and bb.start_ymd=b.start_ymd and bb.end_ymd = b.end_ymd AND aa.user_idx =bb.user_idx AND aa.user_idx = c.idx) != 2
+				 -->
+		</if> 
+			
+		<if test="(google_chk eq 'Y'.toString() and none_leave_chk eq 'N'.toString() and leave_chk eq 'N'.toString())
+				  or
+				  (google_chk eq 'Y'.toString() and none_leave_chk eq 'Y'.toString() and leave_chk eq 'N'.toString())
+				  or
+				  (google_chk eq 'Y'.toString() and leave_chk eq 'Y'.toString() and none_leave_chk eq 'Y'.toString())
+				  or
+				  (google_chk eq 'Y'.toString() and leave_chk eq 'Y'.toString() and none_leave_chk eq 'N'.toString())">
+			UNION ALL 
+		</if>
+		
+		<if test="google_chk eq 'Y'.toString()">
+			select
+				cont AS leave_type,
+				start_ymd,
+				end_ymd,
+				DATEDIFF(end_ymd, start_ymd) AS date_diff,
+				'' AS kor_nm,
+				'F2F0E4' AS user_color,
+				'' AS level_nm,
+				'2' as order_no
+			FROM google_schedule where
+				cont NOT LIKE '%연차%'
+				AND cont NOT LIKE '%반차%'
+				AND cont NOT LIKE '%조퇴%'
+				<if test="!cal_year.equals('')">
+					and ( start_ymd like '%${cal_year}-${cal_mon}%'
+					or end_ymd like '%${cal_year}-${cal_mon}%' )
+				</if>
+		</if>
+		
+		<if test="(google_chk eq 'Y'.toString() and leave_chk eq 'Y'.toString() and none_leave_chk eq 'Y'.toString())
+					or
+				  (google_chk eq 'Y'.toString() and leave_chk eq 'N'.toString() and none_leave_chk eq 'Y'.toString())
+				  	or
+				  (google_chk eq 'N'.toString() and leave_chk eq 'Y'.toString() and none_leave_chk eq 'Y'.toString())
+				    or
+				  (google_chk eq 'N'.toString() and leave_chk eq 'N'.toString() and none_leave_chk eq 'Y'.toString())
+				">
+			UNION ALL 
+		</if>
+		
+		
+		<if test="none_leave_chk eq 'Y'.toString()">
+			SELECT
+				b.leave_type,
+				b.start_ymd,
+				b.end_ymd,
+				DATEDIFF(b.end_ymd, b.start_ymd) AS date_diff,
+				c.NAME AS kor_nm,
+				c.user_color,
+				(SELECT NAME FROM level WHERE idx = c.`level`) AS level_nm,
+				'2' as order_no
+			FROM approval_line a, doc_guntae b, user c where
+				a.doc_type = b.doc_type
+				and c.use_yn='Y'
+				AND a.doc_idx = b.idx
+				AND c.idx = b.user_idx
+				AND a.step !='결재'
+				AND a.step !='반려'
+				AND a.isDel='N'
+				AND a.imsi_yn='N'
+				AND b.leave_type!= '연차취소'  
+				AND b.leave_type!= '반차취소'
+				
+				<if test="!cal_year.equals('')">
+					and ( b.start_ymd like '%${cal_year}-${cal_mon}%'
+					or b.end_ymd like '%${cal_year}-${cal_mon}%' )
+				</if>
+				AND b.idx NOT IN (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(attach_idx, '-', -2),'-',1) FROM doc_guntae WHERE user_idx=b.user_idx AND attach_idx !='') 
+				<!-- 
+				and (select count(*) from approval_line aa, doc_guntae bb where 
+						aa.doc_type=bb.doc_type and aa.doc_idx = bb.idx and aa.step='결재' and bb.start_ymd=b.start_ymd and bb.end_ymd = b.end_ymd AND aa.user_idx =bb.user_idx AND aa.user_idx = c.idx) != 2
+				 -->
+		</if>
+		ORDER BY order_no,start_ymd,end_ymd desc,kor_nm
+	</select>
+	
+	<delete id="delGoogleCal" parameterType="hashmap">
+		delete from google_schedule where start_ymd<![CDATA[>=]]>CONCAT(date_format(NOW(),'%Y-%m-'),'01')
+				AND start_ymd<![CDATA[<=]]>CONCAT(date_format(DATE_add(NOW(),INTERVAL +1 month ),'%Y-%m-'),'31')
+	</delete>
+	
+	
+	<insert id="insGoogleCal" parameterType="hashmap">
+		${doc_text}
+	</insert>
+	
+	<select id="getGoogleList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			*
+		FROM google_schedule WHERE
+			( start_ymd like '%${cal_year}-${cal_mon}%'
+			OR end_ymd like '%${cal_year}-${cal_mon}%' )
+			AND cont NOT LIKE '%연차%'
+			AND cont NOT LIKE '%반차%'
+			AND cont NOT LIKE '%조퇴%'
+			ORDER BY start_ymd 	
+	</select>
+	
+	<select id="getSignCnt" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			count(*) as cnt
+		FROM approval_line aa, user bb,team cc, level dd, doc_list ee, chmod ff WHERE
+			aa.user_idx = bb.idx
+			AND aa.isDel ='N'
+			and aa.imsi_yn = 'N'
+			AND cc.idx = bb.team
+			AND dd.idx = bb.level
+			AND ee.doc_num = aa.doc_type
+			AND ff.idx = bb.chmod
+			
+			and aa.step !='결재'
+			and aa.step !='반려'
+			AND (aa.approval_wait = '${myidx}' 	  
+				<if test="!isManager.equals('')">
+	 				OR aa.approval_wait = ''
+				 </if>
+				 )  
+	</select>
+	
+	<select id="getSignList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			aa.*,
+			bb.NAME as kor_nm,
+			cc.team_kr,
+			dd.NAME as level_nm,
+			ee.doc_name
+		FROM approval_line aa, user bb,team cc, level dd, doc_list ee, chmod ff WHERE
+			aa.user_idx = bb.idx
+			AND aa.isDel ='N'
+			and aa.imsi_yn = 'N'
+			AND cc.idx = bb.team
+			AND dd.idx = bb.level
+			AND ee.doc_num = aa.doc_type
+			AND ff.idx = bb.chmod
+			
+			and aa.step !='결재'
+			and aa.step !='반려'
+			
+			AND (aa.approval_wait = '${myidx}' 	  
+				<if test="!isManager.equals('')">
+	 				OR aa.approval_wait = ''
+				 </if>
+				 ) 
+			order by aa.idx desc
+	</select>
+	
+	<select id="getLeaderListForMail" parameterType="hashmap" resultType="hashmap">
+			SELECT 
+				*
+			FROM user AA WHERE 1
+				AND (AA.chmod = 1 || AA.chmod = 2 || AA.chmod = 3 )
+				AND AA.use_yn='Y'
+				AND AA.idx 
+					NOT IN (
+							select
+								user_idx
+							FROM send_mail_log where
+								cont='정기메일'
+								AND submit_date='${ymd}'
+							)		
+			ORDER BY chmod desc
+	</select>
+	
+	<insert id="insMailLog" parameterType="hashmap">
+		insert into send_mail_log
+		(
+			user_idx, cont, submit_date, create_date
+		)
+		values
+		(
+			'${idx}','${cont}',date_format(now(), '%Y%m%d'),now()+0
+		)
+		
+		
+	</insert>
+	
+	<select id="getSaleCnt" parameterType="hashmap" resultType="hashmap">
+		SELECT   
+			COUNT(*) AS sale_cnt
+  		FROM sale_info WHERE	 
+  			step = 1
+	</select>
+	
+	<select id="getSaleList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			idx,
+			date_format(submit_date,'%Y-%m-%d %H:%i') AS submit_date,
+			user_company, 
+			user_type,
+			user_manager
+		FROM sale_info
+		WHERE step = 1
+		ORDER BY submit_date desc
+	</select>
+	
+	
+</mapper>

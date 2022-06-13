@@ -1,0 +1,28 @@
+.list-edit-wrap{
+	position:fixed;
+	top:0; left:0; right:0;
+	width:100%; height:100%;
+	background:rgba(0,0,0,0.65);
+	display:none; 
+	z-index: 1000;
+}
+.list-edit{
+    background-color:white;
+    padding: 50px 30px;
+    text-align: center; 
+    position: relative;
+}
+.list-edit .txt {
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+}
+.list-edit .close {
+    width: 37px;
+    height: 37px;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: url('/img/icon_close.png') no-repeat center;    
+    cursor:pointer;
+}

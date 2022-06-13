@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/mumul/mumulMapper">
+	<select id="getCateList" parameterType="hashmap" resultType="hashmap">
+		select * from mumul where 1
+		<if test="isShow eq 'N'.toString()">
+			and is_show = 'Y'
+		</if>
+		order by sort
+	</select>
+	<delete id="delCate" parameterType="hashmap">
+		delete from mumul where idx = '${idx}'
+	</delete>
+	<insert id="addPlease" parameterType="hashmap">
+		insert into mumul_please
+		set
+		val = '${val}',
+		submit_date = now()+0
+	</insert>
+	<update id="saveContents" parameterType="hashmap">
+		update mumul
+		set
+		view_type = '${view_type}',
+		contents = '${contents}'
+		where
+		idx = '${idx}'
+	</update>
+	<select id="getContents" parameterType="hashmap" resultType="hashmap">
+		select * from mumul where idx = '${idx}'
+	</select>
+	<select id="getOneDep" parameterType="hashmap" resultType="hashmap">
+		select * from mumul where dep = '1' and is_show = 'Y' order by sort
+	</select>
+	<select id="getNextCate" parameterType="hashmap" resultType="hashmap">
+		select * from mumul where par = '${idx}' and is_show = 'Y' order by sort
+	</select>
+	<select id="getSearchCate" parameterType="hashmap" resultType="hashmap">
+		select * from mumul where (cate_nm like '%${search_val}%' or contents like '%${search_val}%') and is_show = 'Y' order by sort
+	</select>
+	<select id="isInCate" parameterType="hashmap" resultType="int">
+		select count(*) as cnt from mumul where idx = '${idx}'
+	</select>
+	<update id="upCate" parameterType="hashmap">
+		update mumul
+		set 
+		dep = '${dep}',
+		par = '${par}',
+		cate_nm = '${cate_nm}',
+		is_show = '${is_show}',
+		sort = '${sort}'
+		where
+		idx = '${idx}'
+	</update>
+	<update id="insCate" parameterType="hashmap">
+		insert into mumul
+		set 
+		idx = '${idx}',
+		dep = '${dep}',
+		par = '${par}',
+		cate_nm = '${cate_nm}',
+		is_show = '${is_show}',
+		sort = '${sort}',
+		submit_date = now()+0
+	</update>
+</mapper>

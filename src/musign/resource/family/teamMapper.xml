@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/teamMapper">
+	<select id="getTeamList" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			a.idx,
+			a.NAME,
+			a.team,
+			a.chmod,
+			a.level,
+			<choose>
+
+				<when test = "!search_year.equals('') and !search_period.equals('')">
+				
+				(
+					SELECT step FROM okr where user_idx = a.idx
+					and year = '${search_year}'
+					and period = '${search_period}'
+				) as step,
+				'${search_period}' as now_period,
+				
+				</when>
+				
+				<otherwise>
+				
+				(
+					SELECT step FROM okr where user_idx = a.idx
+					and year = DATE_FORMAT(now(), '%Y')
+					and period = CASE
+									WHEN DATE_FORMAT(now(), '%m') <![CDATA[>=]]> 1 AND DATE_FORMAT(now(), '%m') <![CDATA[<=]]> 3 THEN 1
+									WHEN DATE_FORMAT(now(), '%m') <![CDATA[>=]]> 4 AND DATE_FORMAT(now(), '%m') <![CDATA[<=]]> 6 THEN 2
+									WHEN DATE_FORMAT(now(), '%m') <![CDATA[>=]]> 7 AND DATE_FORMAT(now(), '%m') <![CDATA[<=]]> 9 THEN 3
+									WHEN DATE_FORMAT(now(), '%m') <![CDATA[>=]]> 10 AND DATE_FORMAT(now(), '%m') <![CDATA[<=]]> 12 THEN 4
+								 END
+				) as step,
+				(CASE
+					WHEN DATE_FORMAT(now(), '%m') <![CDATA[>=]]> 1 AND DATE_FORMAT(now(), '%m') <![CDATA[<=]]> 3 THEN 1
+					WHEN DATE_FORMAT(now(), '%m') <![CDATA[>=]]> 4 AND DATE_FORMAT(now(), '%m') <![CDATA[<=]]> 6 THEN 2
+					WHEN DATE_FORMAT(now(), '%m') <![CDATA[>=]]> 7 AND DATE_FORMAT(now(), '%m') <![CDATA[<=]]> 9 THEN 3
+					WHEN DATE_FORMAT(now(), '%m') <![CDATA[>=]]> 10 AND DATE_FORMAT(now(), '%m') <![CDATA[<=]]> 12 THEN 4
+				END) as now_period,
+				
+				</otherwise>
+				
+			</choose>
+			(SELECT team_kr FROM team WHERE idx = a.team) AS team_nm,
+			(SELECT name FROM chmod WHERE idx = a.chmod) AS chmod_nm,
+			(SELECT name FROM level WHERE idx = a.level) AS level_nm,
+			a.regi_date,
+			a.leave_date,
+			a.sale_auth,
+			a.card_no
+		FROM user a WHERE 
+			1=1
+			<!-- a.idx!='${myidx}'  -->
+			<if test="!teamidx.equals('')">
+		 		and a.team='${teamidx}'
+		 	</if>
+		 	
+		 	<if test="search_use_yn != 'Y'.toString()">
+				and a.use_yn='Y'
+			</if>
+	
+			<if test="!search_name.equals('')">
+				and a.name like  '%${search_name}%'
+			</if>
+			
+			<if test="!search_chmod.equals('')">
+				and a.chmod = '${search_chmod}'
+			</if>
+			
+			<if test="!search_level.equals('')">
+				and a.level = '${search_level}'
+			</if>
+		 	
+		 	<if test="!teamidx.equals('')">
+				AND a.chmod >= '${chmodidx}'
+			</if>
+			
+		 	ORDER BY a.team, a.chmod
+	</select>
+	
+	<update id="getOut" parameterType="hashmap">
+		UPDATE  user set
+ 			leave_date = '${leave_date}',
+ 			use_yn='N'
+		where 
+			idx ='${idx}'
+	</update>
+	
+	
+	<select id="getTeam" parameterType="hashmap" resultType="hashmap">
+		SELECT * FROM team
+	</select>
+	
+	<select id="getChmod" parameterType="hashmap" resultType="hashmap">
+		SELECT * FROM chmod where 1=1
+			<!-- 
+			<if test="!teamidx.equals('2')"> 
+				
+				and idx > 1
+			</if>
+			 -->
+	</select>
+	
+	<select id="getLevel" parameterType="hashmap" resultType="hashmap">
+		SELECT * FROM level where 1=1 
+			<!-- 
+			<if test="!teamidx.equals('2')"> 
+				
+				idx > 1 
+			</if>
+			-->
+	</select>
+	
+	<update id="updateMemberInfo" parameterType="hashmap">
+		UPDATE  user set
+ 			team = '${member_team_idx}',
+ 			chmod = '${member_chmod_idx}',
+ 			level = '${member_level_idx}',
+ 			regi_date = '${member_sign_date}',
+ 			<if test="!card_no.equals('')">
+ 				card_no ='${card_no}',
+ 			</if>
+ 			sale_auth = '${member_auth}'
+		where 
+			idx ='${member_idx}'
+	</update>
+	
+</mapper>

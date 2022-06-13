@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/salesMapper">
+
+	<select id="getSaleUserList" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			* 
+		FROM user WHERE 
+			use_yn='Y' 
+			AND (team='3' OR team='4')
+			ORDER BY level,chmod,team
+	</select>
+	
+	<select id="saleServiceList" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			* 
+		FROM sale_service
+	</select>
+	
+	
+	<select id="getSaleInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			a.*,
+			b.sale_email,
+			b.comment,
+			b.meeting_cont,
+			b.meeting_ymd,
+			b.contract_yn,
+			b.contract_date,
+			b.FILE AS esti_file,
+			b.file_ori AS esti_file_ori,
+			b.important_yn,
+			ifnull((select name from user where idx = a.manager_idx),'미정') as manager_nm
+		FROM sale_info a, sale_estimate b WHERE 
+			a.idx='${idx}'
+			AND b.sale_idx = a.idx
+	</select>
+	
+	
+	<insert id="insSale" parameterType="hashmap">		
+		<selectKey keyProperty="idx" order="BEFORE" resultType="int">
+			SELECT IFNULL(MAX(CAST(idx AS SIGNED))+1,1) AS idx FROM sale_info
+		</selectKey>
+		
+        insert into sale_info
+ 		(
+ 		 idx,
+ 		 create_user,		service_type, 		project_type, 			
+ 		 project_budget,	start_ymd, 			end_ymd, 		
+ 		 select_way,		site_url,			
+ 		 project_cont,		file,				file_ori,
+ 		 user_company,		user_manager,		user_type,
+ 		 user_phone,		
+ 		 user_email,		user_biz_no,		known_path,
+ 		 info_yn,			submit_date
+ 		 
+ 		)
+            VALUES
+		(
+		 '${idx}',
+		 '${myidx}',			'${service_type}',		'${project_type}',			
+		 '${project_budget}',	'${start_ymd}',			'${end_ymd}',		
+		 '${select_way}',		'${site_url}',			
+		 '${project_cont}',		'${filename_arr}',		'${filename_ori_arr}',
+		 '${user_company}',		'${user_manager}',		'${user_type}',
+		 '${user_phone}',		
+		 '${user_email}',		'${user_biz_no}',		'${known_path}',
+		 '${info_yn}',			now()+0
+		)
+	</insert>
+	
+	<update id="uptSale" parameterType="hashmap">
+		UPDATE  sale_info set
+	 		 update_user='${myidx}', 				service_type='${service_type}',
+	 		 project_type = '${project_type}', 		project_budget = '${project_budget}', 		
+	 		 start_ymd='${start_ymd}',				end_ymd='${end_ymd}',				
+	 		 select_way = '${select_way}',			site_url = '${site_url}',
+	 		 project_cont = '${project_cont}',		
+	 		 file = '${filename_arr}',				file_ori = '${filename_ori_arr}',	
+	 		 user_company = '${user_company}',		user_manager = '${user_manager}',
+	 		 user_type = '${user_type}',			user_phone = '${user_phone}',	
+	 		 user_email = '${user_email}',			user_biz_no = '${user_biz_no}',
+	 		 known_path = '${known_path}',			info_yn = '${info_yn}',
+	 		 update_date =now()+0
+		where 
+			idx ='${idx}'
+	</update>
+	
+	<insert id="insEstimate" parameterType="hashmap">		
+
+        insert into sale_estimate
+ 		(
+ 		 sale_idx,			comment,			submit_date,
+ 		 important_yn
+ 		 
+ 		)
+            VALUES
+		(
+		 '${sale_idx}',	   '${comment}',		now()+0,
+		 '${important_yn}'
+		)
+	</insert>
+	
+	<update id="uptEstimate" parameterType="hashmap">
+		UPDATE  sale_estimate set
+	 		 comment = '${comment}',
+	 		 important_yn = '${important_yn}'
+		where 
+			sale_idx ='${idx}'
+	</update>
+	
+	
+	<update id="chooseManager" parameterType="hashmap">
+		UPDATE  sale_info set
+			 manager_idx='${manager_idx}',
+	 		 update_user='${myidx}', 		
+	 		 step='2',			
+	 		 manager_date =now()+0,
+	 		 update_date =now()+0
+		where 
+			idx ='${idx}'
+		 
+	</update>
+	
+	
+	<select id="getSaleListCount" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			count(*) as CNT
+		FROM sale_info aa, sale_estimate bb WHERE 
+				bb.sale_idx = aa.idx
+				
+			<if test="!start_ymd.equals('')">
+				AND aa.submit_date <![CDATA[>=]]> concat(REPLACE('${start_ymd}','-',''),'000000')
+			</if>
+			<if test="!end_ymd.equals('')">
+				AND aa.submit_date <![CDATA[<=]]> concat(REPLACE('${end_ymd}','-',''),'999999')
+			</if>
+			
+			<if test="!upt_start_ymd.equals('')">
+				AND aa.update_date <![CDATA[>=]]> concat(REPLACE('${upt_start_ymd}','-',''),'000000')
+			</if>
+			<if test="!upt_end_ymd.equals('')">
+				AND aa.update_date <![CDATA[<=]]> concat(REPLACE('${upt_end_ymd}','-',''),'999999')
+			</if>
+			
+			
+			<if test="!step.equals('')">
+				AND aa.step='${step}'
+			</if>
+			<if test="!sale_manager.equals('')">
+				AND aa.manager_idx='${sale_manager}'
+			</if>
+			
+			<if test="!sale_service.equals('')">
+				AND aa.service_type like '%${sale_service}%'
+			</if>
+			
+			<if test="!search_cont.equals('')">
+				AND (bb.comment like '%${search_cont}%' or aa.user_company like '%${search_cont}%' or aa.user_type like '%${search_cont}%' )
+			</if>
+			
+			
+	</select>
+
+	<select id="getSaleList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			aa.idx,
+			aa.step as step_no,
+			(case step 
+				when '1' then '문의/접수'
+				when '2' then '준비중'
+				when '3' then '협의중'
+				when '4' then '계약'
+				when '5' then '패스'
+			END) AS step,
+			ifnull((select name from user where idx = aa.manager_idx),'미정') as NAME,
+			bb.important_yn,
+			date_format(aa.submit_date, '%Y-%m-%d') AS submit_date,
+			date_format(aa.update_date, '%Y-%m-%d') AS update_date,
+			aa.user_company,
+			aa.user_type,
+			aa.user_manager,
+			aa.user_phone,
+			aa.user_email,
+			replace(replace(replace(replace(replace(replace(
+			replace(replace(replace(replace(replace(replace(
+			aa.service_type,'|',','),'11','기타'),'10','수출바우처'),'09','카탈로그제작'),'08','BX'),'07','제품소개사이트'),
+			'06','서버관리 서비스'),'05','디지털마케팅'),'04','패키지디자인'),'03','마이크로사이트'),'02','이커머스'),'01','기업사이트') AS service_type,
+			replace(replace(replace(replace(replace(
+			aa.project_type,'|',','),'04','기타'),'03','유지보수'),'02','리뉴얼'),'01','신규구축') AS project_type,
+			(SELECT price_nm FROM sale_price WHERE price_no= aa.project_budget) AS project_budget,
+			aa.start_ymd,
+			aa.end_ymd,
+			(SELECT select_nm FROM sale_select_way WHERE select_no= aa.select_way) AS select_way,
+			aa.site_url,
+			replace(replace(replace(replace(replace(
+			replace(replace(replace(replace(replace
+			(aa.known_path,'|',','),'09','기타'),'08','뮤자인블로그'),'07','수출바우처 사이트'),'06','어워드수상이력')
+			,'05','포털사이트검색'),'04','디비컷'),'03','지디웹'),'02','지인소개'),'01','기존고객사') AS known_path,
+			bb.comment
+		FROM sale_info aa, sale_estimate bb WHERE 
+			 bb.sale_idx = aa.idx
+			 and bb.important_yn = '${important_yn}'
+			<if test="!start_ymd.equals('')">
+				AND aa.submit_date <![CDATA[>=]]> concat(REPLACE('${start_ymd}','-',''),'000000')
+			</if>
+			<if test="!end_ymd.equals('')">
+				AND aa.submit_date <![CDATA[<=]]> concat(REPLACE('${end_ymd}','-',''),'999999')
+			</if>
+			
+			<if test="!upt_start_ymd.equals('')">
+				AND aa.update_date <![CDATA[>=]]> concat(REPLACE('${upt_start_ymd}','-',''),'000000')
+			</if>
+			<if test="!upt_end_ymd.equals('')">
+				AND aa.update_date <![CDATA[<=]]> concat(REPLACE('${upt_end_ymd}','-',''),'999999')
+			</if>
+			
+			<if test="!step.equals('')">
+				AND aa.step='${step}'
+			</if>
+			<if test="!sale_manager.equals('')">
+				AND aa.manager_idx='${sale_manager}'
+			</if>
+			
+			<if test="!sale_service.equals('')">
+				AND aa.service_type like '%${sale_service}%'
+			</if>
+				 
+			<if test="!search_cont.equals('')">
+				AND (bb.comment like '%${search_cont}%' or aa.user_company like '%${search_cont}%' or aa.user_type like '%${search_cont}%' )
+			</if>
+			
+			<if test="!choice.equals('')">
+				and aa.project_type like '%${choice}%'
+			</if>
+			
+			<if test="!known_path.equals('')">
+				and aa.known_path like '%${known_path}%'
+			</if>
+			
+			<if test="!budget.equals('')">
+				and aa.project_budget = '${budget}'
+			</if>
+			
+			<!-- 김진오 팀장님 강제 요청 start -->
+			<if test="!order_by.equals('') and !sort_type.equals('')">
+				order by ${sort_type} ${order_by}
+			</if>
+			<!-- 김진오 팀장님 강제 요청 end -->
+			
+			<if test="order_by=='' and sort_type==''">
+				order by CAST(aa.idx AS SIGNED) desc
+			</if>
+			
+			limit ${s_rownum}, ${e_rownum}
+	</select>
+	
+	<select id="getManagerInfo" parameterType="hashmap" resultType="hashmap">
+		select * from user where idx ='${manager_idx}' and use_yn='Y'
+	</select>
+	
+	<select id="getTargetInfo" parameterType="hashmap" resultType="hashmap">
+	SELECT
+		TRIM(TRAILING ',' from replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(REPLACE(
+		aa.service_type,'|',','),'01','기업사이트'),'02','이커머스'),'03','마이크로사이트'),'04','패키지디자인')
+		,'05','디지털마케팅'),'06','서버관리 서비스'),'07','제품소개사이트'),'08','BX'),'09','카탈로그제작'),'10','수출바우처'),'11','기타'))AS service_type_nm,
+		
+		TRIM(TRAILING ',' from replace(replace(replace(replace(replace(
+		aa.project_type,'|',','),'01','신규구축'),'02','리뉴얼'),'03','유지보수'),'04','기타')) AS project_type_nm,
+		
+		(SELECT price_nm FROM sale_price WHERE price_no =aa.project_budget) AS price_nm,
+		aa.* 
+	from sale_info aa WHERE 
+		 aa.idx ='${idx}'
+	</select>
+
+	<select id="getTeamLeaderMail" parameterType="hashmap" resultType="hashmap">
+		<!-- SELECT email FROM user WHERE team = (SELECT team FROM user WHERE idx='${manager_idx}') AND chmod='3' AND use_yn='Y' -->
+		SELECT 
+			GROUP_CONCAT(email SEPARATOR '|') as email
+		FROM user WHERE 
+			sale_auth='M' OR (team = 1 OR team = 3 OR team=4)
+			AND use_yn='Y'
+			AND chmod <![CDATA[<=]]> 3
+			ORDER BY LEVEL
+	</select>
+	
+	<update id="checkMiddleStep" parameterType="hashmap">
+		UPDATE  sale_info set
+	 		 step='3',
+	 		 sale_date = now()+0
+		where 
+			idx ='${idx}'
+	</update>
+	
+	<update id="doContract" parameterType="hashmap">
+		UPDATE  sale_estimate set
+	 		 contract_date = now()+0,
+	 		 contract_yn ='${chk_val}'
+		where 
+			sale_idx ='${idx}'
+	</update>
+	
+	<update id="chooseContractStep" parameterType="hashmap">
+		UPDATE  sale_info set
+	 		 update_date = now()+0,
+	 		 step ='${step_value}'
+		where 
+			idx ='${idx}'
+	</update>
+	
+	<update id="doDelete" parameterType="hashmap">
+		DELETE t1, t2
+			FROM sale_info t1 INNER join sale_estimate t2
+		WHERE 
+			t1.idx='${idx}'
+			and t1.idx = t2.sale_idx
+	</update>
+	
+	<select id="getSaleComment" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+			*
+		FROM sale_estimate WHERE 
+			sale_idx ='${sale_idx}'
+	</select>
+	
+</mapper>

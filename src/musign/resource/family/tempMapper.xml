@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/family/tempMapper">
+	<select id="getTempListCount" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			count(*) as CNT
+		FROM approval_line aa, user bb,team cc, level dd, doc_list ee WHERE
+			aa.user_idx = bb.idx
+			AND aa.imsi_yn ='Y'
+			AND cc.idx = bb.team
+			AND dd.idx = bb.chmod
+			AND ee.doc_num = aa.doc_type
+			AND (aa.user_idx = '${myidx}'	  
+				 or aa.approval_wait = '${myidx}' 
+				 or approval_chk LIKE '%${myidx}%') 
+	</select>
+
+	<select id="getTempList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			aa.*,
+			bb.NAME as kor_nm,
+			cc.team_kr,
+			dd.NAME as level_nm,
+			ee.doc_name
+		FROM approval_line aa, user bb,team cc, level dd, doc_list ee, chmod ff WHERE
+			aa.user_idx = bb.idx
+			AND aa.imsi_yn ='Y'
+			AND aa.isDel ='N'
+			AND cc.idx = bb.team
+			AND dd.idx = bb.chmod
+			AND ee.doc_num = aa.doc_type
+			AND ff.idx = bb.chmod
+			AND (aa.user_idx = '${myidx}'	  
+				 or aa.approval_wait = '${myidx}'  
+				 or approval_chk LIKE '%${myidx}%'
+				 or(aa.approval_wait ='' and '${isManager}'='Y')) 
+			order by aa.idx desc
+			limit ${s_rownum}, ${e_rownum}
+	</select>
+	
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<mappers>
+		<mapper resource="musign/resource/family/moMapper.xml" />	
+		<mapper resource="musign/resource/family/systemMapper.xml" />	
+		<mapper resource="musign/resource/family/mypageMapper.xml" />	
+		<mapper resource="musign/resource/family/mainMapper.xml" />
+		<mapper resource="musign/resource/family/userMapper.xml" />
+		<mapper resource="musign/resource/family/boardMapper.xml" />
+		<mapper resource="musign/resource/family/leaveMapper.xml" />
+		<mapper resource="musign/resource/family/allowMapper.xml" />
+		<mapper resource="musign/resource/family/dosignMapper.xml" />
+		<mapper resource="musign/resource/family/operMapper.xml" />
+		<mapper resource="musign/resource/family/tempMapper.xml" />
+		<mapper resource="musign/resource/family/salesMapper.xml" />
+		<mapper resource="musign/resource/family/teamMapper.xml" />
+		<mapper resource="musign/resource/family/guntaeMapper.xml" />
+		<mapper resource="musign/resource/family/musignlibMapper.xml" />
+		<mapper resource="musign/resource/family/recruitMapper.xml" />
+		<mapper resource="musign/resource/family/kpiMapper.xml" />
+		<mapper resource="musign/resource/family/roomMapper.xml" />
+		<mapper resource="musign/resource/mumul/mumulMapper.xml" />
+		
+		<mapper resource="musign/resource/mo/mainMapper.xml" />
+		<mapper resource="musign/resource/mo/offerMapper.xml" />
+		<mapper resource="musign/resource/mo/targetMapper.xml" />
+		<mapper resource="musign/resource/mo/userMapper.xml" />
+		
+		
+		
+	</mappers>
+</configuration> 
